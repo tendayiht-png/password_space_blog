@@ -14,10 +14,13 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.contrib import admin
 from django.urls import path
-from . import views
+from blog import views as blog_views
 
 urlpatterns = [
-    path('', views.PostList.as_view(), name='home'),
-    path('post/<slug:slug>/', views.PostDetail.as_view(), name='post_detail'),
+    path('admin/', admin.site.urls),
+    # Show the blog post list at the site root (http://127.0.0.1:8000/)
+    path('', blog_views.PostList.as_view(), name='home'),
 ]
+
