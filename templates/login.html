@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<main class="container" style="max-width: 600px; margin-top: 2rem;">
+  <div class="form-shell">
+    <article class="hero-card">
+      <span class="badge">Account Access</span>
+      <h1>Welcome Back</h1>
+      <p>
+        Sign in to your account to access your settings and manage your security preferences.
+      </p>
+      <div class="pill-row">
+        <span class="pill">Secure JWT</span>
+        <span class="pill">HttpOnly Cookies</span>
+        <span class="pill">Stay Logged In</span>
+      </div>
+    </article>
+
+    <section style="margin-top: 2rem;">
+      <form id="loginForm" class="auth-form">
+        {% csrf_token %}
+        
+        <div class="field">
+          <label for="username">Username</label>
+          <input 
+            type="text" 
+            id="username" 
+            name="username"
+            placeholder="Enter your username"
+            required
+            autocomplete="username"
+          >
+          <p id="usernameError" class="field-error" aria-live="polite"></p>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password"
+            placeholder="Enter your password"
+            required
+            autocomplete="current-password"
+          >
+          <p id="passwordError" class="field-error" aria-live="polite"></p>
+        </div>
+
+        <div class="field" style="margin-bottom: 0.5rem;">
+          <label style="display: flex; align-items: center; cursor: pointer;">
+            <input 
+              type="checkbox" 
+              id="rememberMe" 
+              name="remember_me"
+              style="width: 18px; height: 18px; margin-right: 0.5rem; cursor: pointer;"
+            >
+            <span style="font-size: 0.875rem; color: #374151;">
+              Keep me logged in (up to 30 days)
+            </span>
+          </label>
+        </div>
+
+        <div class="hero-actions">
+          <button type="submit" class="btn btn-primary" id="loginBtn">Sign In</button>
+          <a href="{% url 'register_page' %}" class="btn btn-secondary">Create Account</a>
+        </div>
+
+        <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem;">
+          <a href="{% url 'forgot_password_page' %}" style="color: var(--brand); font-weight: 600;">Forgot password?</a>
+        </p>
+
+        <div id="formResult" class="form-result" style="display: none;"></div>
+      </form>
+    </section>
+  </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('loginForm');
+  const usernameInput = document.getElementById('username');
+  const passwordInput = document.getElementById('password');
+  const rememberMeCheckbox = document.getElementById('rememberMe');
+  const loginBtn = document.getElementById('loginBtn');
+  const resultDiv = document.getElementById('formResult');
+  const usernameError = document.getElementById('usernameError');
+  const passwordError = document.getElementById('passwordError');
+
+  // Clear errors on input
+  usernameInput.addEventListener('input', () => usernameError.textContent = '');
+  passwordInput.addEventListener('input', () => passwordError.textContent = '');
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // Reset errors
+    usernameError.textContent = '';
+    passwordError.textContent = '';
+    resultDiv.style.display = 'none';
+
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+    const rememberMe = rememberMeCheckbox.checked;
+
+    if (!username) {
+      usernameError.textContent = 'Username is required.';
+      return;
+    }
+
+    if (!password) {
+      passwordError.textContent = 'Password is required.';
+      return;
+    }
+
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    // Disable button during request
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Signing in...';
+
+    try {
+      const response = await fetch('/API/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken,
+          'Referer': window.location.href
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password,
+          remember_me: rememberMe
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.ok) {
+        showMessage('Login successful! Redirecting...', 'success');
+        
+        // Redirect to settings or homepage
+        setTimeout(() => {
+          window.location.href = data.redirect || '/settings/';
+        }, 1000);
+      } else {
+        showMessage(data.message || 'Invalid username or password.', 'error');
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Sign In';
+      }
+    } catch (error) {
+      showMessage('An error occurred. Please try again.', 'error');
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Sign In';
+    }
+  });
+
+  function showMessage(message, type) {
+    resultDiv.textContent = message;
+    resultDiv.className = 'form-result ' + type;
+    resultDiv.style.display = 'block';
+  }
+});
+</script>
+{% endblock %}
