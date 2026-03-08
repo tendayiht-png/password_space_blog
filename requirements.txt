@@ -5,3 +5,5 @@ django-cloudinary-storage
 cloudinary
 django-summernote
 django-extensions
+psycopg2-binary>=2.9.9
+dj-database-url>=2.1.0
