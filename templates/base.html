@@ -39,7 +39,13 @@
                 <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Home</a>
                 <a class="nav-link" href="{% url 'how_to_page' %}">How-To 2FA</a>
                 <a class="nav-link" href="{% url 'checklist_page' %}">Breach Checklist</a>
-                <a class="nav-link" href="{% url 'register_page' %}">Register</a>
+                {% if user.is_authenticated %}
+                    <a class="nav-link" href="{% url 'settings_page' %}">Settings</a>
+                    <a class="nav-link" href="#" id="logoutLink" style="cursor: pointer;">Logout</a>
+                {% else %}
+                    <a class="nav-link" href="{% url 'login_page' %}">Login</a>
+                    <a class="nav-link" href="{% url 'register_page' %}">Register</a>
+                {% endif %}
             </div>
         </div>
     </nav>
@@ -54,8 +60,56 @@
 
     <!-- Footer -->
     <footer class="footer mt-auto py-3 dark-bg">
-        <p class="m-0 text-center text-white">Password Safe Blog © 2026 - Protecting Your Digital Life</p>
-        <p class="m-0 text-center text-white">Simple security tips for complex threats</p>
+        <div class="container">
+            <div class="row text-white" style="padding: 20px 0;">
+                <!-- About Section -->
+                <div class="col-md-4 mb-3">
+                    <h5 style="color: var(--brand); margin-bottom: 15px;">Password Safe Blog</h5>
+                    <p style="font-size: 0.9rem; line-height: 1.6;">
+                        Simple security tips for complex threats. Protecting your digital life with practical, 
+                        actionable guidance on passwords, 2FA, and account security.
+                    </p>
+                </div>
+                
+                <!-- Contact Section -->
+                <div class="col-md-4 mb-3">
+                    <h5 style="color: var(--brand); margin-bottom: 15px;">Contact Us</h5>
+                    <p style="font-size: 0.9rem; line-height: 1.8; margin: 0;">
+                        <i class="fas fa-map-marker-alt" style="width: 20px; color: var(--brand);"></i>
+                        42 Security Lane<br>
+                        <span style="margin-left: 20px;">London, EC2A 4DN</span><br>
+                        <span style="margin-left: 20px;">United Kingdom</span><br><br>
+                        <i class="fas fa-envelope" style="width: 20px; color: var(--brand);"></i>
+                        info@passwordsafeblog.co.uk<br>
+                        <i class="fas fa-phone" style="width: 20px; color: var(--brand);"></i>
+                        +44 20 7946 0123
+                    </p>
+                </div>
+                
+                <!-- Map Section -->
+                <div class="col-md-4 mb-3">
+                    <h5 style="color: var(--brand); margin-bottom: 15px;">Our Location</h5>
+                    <div style="border-radius: 8px; overflow: hidden; height: 200px;">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2482.2676612045!2d-0.08532892346826947!3d51.52628037181825!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48761ca5c2e8f0e5%3A0xe6f7d911c3a2e2f7!2sShoreditch%2C%20London%2C%20UK!5e0!3m2!1sen!2s!4v1709851234567!5m2!1sen!2s" 
+                            width="100%" 
+                            height="200" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Copyright -->
+            <div class="text-center" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 10px;">
+                <p class="m-0 text-white" style="font-size: 0.9rem;">
+                    Password Safe Blog © 2026 - Protecting Your Digital Life
+                </p>
+            </div>
+        </div>
     </footer>
 
     <!-- Bootstrap JS (external) -->
@@ -65,6 +119,63 @@
 
 <!-- Local script -->
 <script src="{% static 'js/script.js' %}"></script>
+
+<!-- JWT Logout Handler -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const logoutLink = document.getElementById('logoutLink');
+    
+    if (logoutLink) {
+        logoutLink.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            try {
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken');
+                
+                const response = await fetch('/API/logout', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'same-origin'
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.ok) {
+                    // Redirect to home
+                    window.location.href = data.redirect || '/';
+                } else {
+                    console.error('Logout failed:', data.message);
+                    // Still redirect to home even if API fails
+                    window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Error during logout:', error);
+                // Redirect anyway
+                window.location.href = '/';
+            }
+        });
+    }
+
+    // Helper function to get CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
         
 </body>
 
