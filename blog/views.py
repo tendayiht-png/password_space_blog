@@ -136,7 +136,7 @@ def register_api(request):
 
 
 class SettingsPageView(LoginRequiredMixin, TemplateView):
-    """User account settings page with danger zone."""
+    """User account settings page with account deletion option."""
     template_name = 'settings.html'
     login_url = '/register/'
 
