@@ -4,16 +4,16 @@ This diagram shows the database schema for the Password Space Blog application, 
 
 ```mermaid
 erDiagram
-    User ||--o{ Post : "authors"
-    User ||--o{ Comment : "writes"
-    Post ||--o{ Comment : "has"
-    User ||--o{ OutstandingToken : "owns"
-    OutstandingToken ||--o| BlacklistedToken : "may_be_blacklisted"
-    User ||--o{ LogEntry : "performs"
+    USER ||--o{ POST : "authors"
+    USER ||--o{ COMMENT : "writes"
+    POST ||--o{ COMMENT : "has"
+    USER ||--o{ OUTSTANDING_TOKEN : "owns"
+    OUTSTANDING_TOKEN ||--o| BLACKLISTED_TOKEN : "references"
+    USER ||--o{ LOG_ENTRY : "performs"
 
-    User {
-        int id PK
-        string username UK
+    USER {
+        int id
+        string username
         string email
         string password
         string first_name
@@ -25,47 +25,46 @@ erDiagram
         datetime last_login
     }
 
-    Post {
-        bigint id PK
-        int author_id FK
-        string title UK
-        string slug UK
+    POST {
+        int id
+        int author_id
+        string title
+        string slug
         text content
         text excerpt
-        int status "0=Draft, 1=Published"
+        int status
         datetime created_on
         datetime updated_on
     }
 
-    Comment {
-        bigint id PK
-        bigint post_id FK
-        int author_id FK
+    COMMENT {
+        int id
+        int post_id
+        int author_id
         text body
         boolean approved
         datetime created_on
-        string new_field
     }
 
-    OutstandingToken {
-        bigint id PK
-        int user_id FK
-        string jti UK "JSON Web Token ID"
+    OUTSTANDING_TOKEN {
+        int id
+        int user_id
+        string jti
         text token
         datetime created_at
         datetime expires_at
     }
 
-    BlacklistedToken {
-        bigint id PK
-        bigint token_id FK UK
+    BLACKLISTED_TOKEN {
+        int id
+        int token_id
         datetime blacklisted_at
     }
 
-    LogEntry {
-        int id PK
-        int user_id FK
-        int content_type_id FK
+    LOG_ENTRY {
+        int id
+        int user_id
+        int content_type_id
         string object_id
         string object_repr
         int action_flag
