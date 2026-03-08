@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container">
+  <section class="hero">
+    <article class="hero-card reveal">
+      <span class="badge">Account Setup</span>
+      <h1>Create your account securely</h1>
+      <p>
+        Pick a unique username and a strong password. We provide real-time strength guidance
+        and reject weak credentials server-side.
+      </p>
+      <div class="pill-row">
+        <span class="pill">Unique Username</span>
+        <span class="pill">Strong Password</span>
+        <span class="pill">Hashed with Argon2</span>
+      </div>
+    </article>
+
+    <aside class="info-card reveal">
+      <h2>Security Rules</h2>
+      <ul class="info-list">
+        <li>Username must not already exist.</li>
+        <li>Password must satisfy strength and complexity checks.</li>
+        <li>Passwords are never stored as plain text.</li>
+      </ul>
+    </aside>
+  </section>
+
+  <section class="form-shell reveal" aria-label="Registration form">
+    <form id="register-form" class="auth-form" novalidate>
+      {% csrf_token %}
+
+      <div class="field">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" autocomplete="username" required />
+        <p id="username-help" class="field-help" aria-live="polite"></p>
+        <p id="username-error" class="field-error" aria-live="polite"></p>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="new-password" required />
+        <div class="strength-meter" aria-hidden="true">
+          <div id="strength-fill" class="strength-fill"></div>
+        </div>
+        <p id="strength-text" class="field-help">Start typing to see password strength.</p>
+        <p id="password-error" class="field-error" aria-live="polite"></p>
+      </div>
+
+      <div class="field">
+        <label for="confirm-password">Confirm Password</label>
+        <input
+          id="confirm-password"
+          name="confirm_password"
+          type="password"
+          autocomplete="new-password"
+          required
+        />
+        <p id="confirm-password-error" class="field-error" aria-live="polite"></p>
+      </div>
+
+      <div class="hero-actions">
+        <button type="submit" class="btn btn-primary">Create Account</button>
+        <a href="{% url 'home' %}" class="btn btn-secondary">Back to Blog</a>
+      </div>
+
+      <p id="form-result" class="form-result" aria-live="polite"></p>
+    </form>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
+<script>
+  (function () {
+    const form = document.getElementById("register-form");
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
+    const confirmInput = document.getElementById("confirm-password");
+
+    const usernameHelp = document.getElementById("username-help");
+    const usernameError = document.getElementById("username-error");
+    const passwordError = document.getElementById("password-error");
+    const confirmError = document.getElementById("confirm-password-error");
+    const resultMessage = document.getElementById("form-result");
+
+    const strengthFill = document.getElementById("strength-fill");
+    const strengthText = document.getElementById("strength-text");
+
+    const csrfToken = form.querySelector("input[name='csrfmiddlewaretoken']").value;
+
+    const labels = ["Very weak", "Weak", "Fair", "Strong", "Very strong"];
+    const colors = ["#b91c1c", "#ea580c", "#d97706", "#0f766e", "#0a5c56"];
+
+    function resetErrors() {
+      usernameError.textContent = "";
+      passwordError.textContent = "";
+      confirmError.textContent = "";
+      resultMessage.textContent = "";
+      resultMessage.className = "form-result";
+    }
+
+    function updateStrength() {
+      const value = passwordInput.value;
+      if (!value) {
+        strengthFill.style.width = "0%";
+        strengthFill.style.background = "#d7ccb9";
+        strengthText.textContent = "Start typing to see password strength.";
+        return 0;
+      }
+
+      const analysis = window.zxcvbn ? window.zxcvbn(value) : { score: 0, feedback: { warning: "" } };
+      const score = analysis.score || 0;
+
+      strengthFill.style.width = String((score + 1) * 20) + "%";
+      strengthFill.style.background = colors[score];
+      strengthText.textContent =
+        labels[score] +
+        (analysis.feedback && analysis.feedback.warning ? " - " + analysis.feedback.warning : "");
+
+      return score;
+    }
+
+    let usernameCheckTimer = null;
+    usernameInput.addEventListener("input", function () {
+      usernameHelp.textContent = "";
+      usernameError.textContent = "";
+      if (usernameCheckTimer) {
+        clearTimeout(usernameCheckTimer);
+      }
+      usernameCheckTimer = setTimeout(checkUsernameAvailability, 250);
+    });
+
+    async function checkUsernameAvailability() {
+      const username = usernameInput.value.trim();
+      if (!username) {
+        usernameHelp.textContent = "";
+        return;
+      }
+
+      try {
+        const response = await fetch("/API/register?username=" + encodeURIComponent(username));
+        const data = await response.json();
+
+        if (response.ok && data.available) {
+          usernameHelp.textContent = "Username is available.";
+        } else if (response.ok && data.exists) {
+          usernameHelp.textContent = "Username is already taken.";
+        } else {
+          usernameHelp.textContent = data.message || "Unable to validate username right now.";
+        }
+      } catch (error) {
+        usernameHelp.textContent = "Unable to validate username right now.";
+      }
+    }
+
+    passwordInput.addEventListener("input", updateStrength);
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      resetErrors();
+
+      const score = updateStrength();
+      if (score < 3) {
+        passwordError.textContent = "Please choose a stronger password before registering.";
+        return;
+      }
+
+      const payload = {
+        username: usernameInput.value.trim(),
+        password: passwordInput.value,
+        confirm_password: confirmInput.value,
+      };
+
+      try {
+        const response = await fetch("/API/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.ok) {
+          resultMessage.textContent = data.message;
+          resultMessage.className = "form-result success";
+          form.reset();
+          updateStrength();
+          usernameHelp.textContent = "";
+          return;
+        }
+
+        const errors = data.errors || {};
+        if (errors.username) {
+          usernameError.textContent = errors.username.join(" ");
+        }
+        if (errors.password) {
+          passwordError.textContent = errors.password.join(" ");
+        }
+        if (errors.confirm_password) {
+          confirmError.textContent = errors.confirm_password.join(" ");
+        }
+
+        if (!errors.username && !errors.password && !errors.confirm_password) {
+          resultMessage.textContent = data.message || "Registration failed.";
+          resultMessage.className = "form-result error";
+        }
+      } catch (error) {
+        resultMessage.textContent = "Registration is unavailable right now. Please try again.";
+        resultMessage.className = "form-result error";
+      }
+    });
+  })();
+</script>
+{% endblock %}

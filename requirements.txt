@@ -8,3 +8,4 @@ django-summernote
 django-extensions
 psycopg2-binary>=2.9.9
 dj-database-url>=2.1.0
+argon2-cffi>=23.1.0
