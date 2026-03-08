@@ -13,18 +13,15 @@
                 <div class="col-md-4">
                     <div class="card mb-4">
                         <div class="card-body">
-                            <div class="image-container">
-                                <div class="image-flash">
-                                    <p class="author">Author: {{ post.author }}</p>
-                                </div>
-                            </div>
                             <a href="{% url 'post_detail' post.slug %}" class="post-link">
                                 <h2 class="card-title">{{ post.title }}</h2>
                             </a>
-
+                            <p class="card-text">{{ post.excerpt }}</p>
                             <hr />
-                            <p class="card-text text-muted h6">{{ post.created_on}}
+                            <p class="card-text text-muted h6">
+                                <i class="far fa-calendar"></i> {{ post.created_on|date:"M d, Y" }}
                             </p>
+                            <a href="{% url 'post_detail' post.slug %}" class="btn btn-outline-primary btn-sm">Read More →</a>
                         </div>
                     </div>
                 </div>
