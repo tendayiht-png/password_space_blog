@@ -73,81 +73,24 @@ erDiagram
     }
 ```
 
-## Table Descriptions
+## Tables Overview
 
-### Core Blog Tables
+| Table | Purpose |
+|-------|---------|
+| **User** | Authentication & user profiles (Argon2 hashed, 12+ chars min) |
+| **Post** | Blog posts with author, slug, draft/published status |
+| **Comment** | Post comments with approval moderation |
+| **OutstandingToken** | Active JWT refresh tokens |
+| **BlacklistedToken** | Revoked/logged-out tokens |
+| **LogEntry** | Django admin audit trail |
 
-#### User (Django Auth)
-- **Purpose**: Stores user authentication and profile information
-- **Key Fields**:
-  - `username`: Unique identifier for login
-  - `password`: Argon2 hashed password (12+ character minimum enforced)
-  - `is_staff`: Admin panel access flag
-  - `is_superuser`: Full administrative privileges
+## Key Relationships
 
-#### Post
-- **Purpose**: Blog post content and metadata
-- **Key Fields**:
-  - `author_id`: Foreign key to User (related_name: "blog_posts")
-  - `slug`: URL-friendly identifier (unique)
-  - `status`: Draft (0) or Published (1)
-  - `created_on`: Auto-set on creation
-  - `updated_on`: Auto-updated on save
-
-#### Comment
-- **Purpose**: User comments on blog posts
-- **Key Fields**:
-  - `post_id`: Foreign key to Post (related_name: "comments")
-  - `author_id`: Foreign key to User (related_name: "commenter")
-  - `approved`: Moderation flag (default: false)
-
-### JWT Authentication Tables
-
-#### OutstandingToken
-- **Purpose**: Tracks all issued JWT refresh tokens
-- **Key Fields**:
-  - `user_id`: Foreign key to User
-  - `jti`: Unique JSON Web Token ID
-  - `token`: Full JWT refresh token string
-  - `expires_at`: Token expiration timestamp
-
-#### BlacklistedToken
-- **Purpose**: Revoked/invalidated refresh tokens
-- **Key Fields**:
-  - `token_id`: Foreign key to OutstandingToken (unique)
-  - `blacklisted_at`: Timestamp of revocation
-- **Behavior**: When a user logs out, their refresh token is added here
-
-### System Tables
-
-#### LogEntry (Django Admin)
-- **Purpose**: Audit trail for admin actions
-- **Key Fields**:
-  - `user_id`: Admin user who performed action
-  - `content_type_id`: Type of model affected
-  - `action_flag`: Add (1), Change (2), Delete (3)
-
-## Relationships
-
-1. **User → Post** (One-to-Many)
-   - Each user can author multiple posts
-   - Cascade delete: Deleting user deletes their posts
-
-2. **User → Comment** (One-to-Many)
-   - Each user can write multiple comments
-   - Cascade delete: Deleting user deletes their comments
-
-3. **Post → Comment** (One-to-Many)
-   - Each post can have multiple comments
-   - Cascade delete: Deleting post deletes its comments
-
-4. **User → OutstandingToken** (One-to-Many)
-   - Each user can have multiple active JWT tokens
-   - Cascade delete: Deleting user deletes their tokens
-
-5. **OutstandingToken → BlacklistedToken** (One-to-One)
-   - Each token can be blacklisted only once
-   - Cascade delete: Deleting token deletes blacklist entry
+- User → Post (1:M, cascade delete)
+- User → Comment (1:M, cascade delete)
+- Post → Comment (1:M, cascade delete)
+- User → OutstandingToken (1:M, cascade delete)
+- OutstandingToken → BlacklistedToken (1:1)
 
 ## Indexes and Constraints
 
