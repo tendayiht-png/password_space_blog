@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Subtle security lock pattern background">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f7f0e4"/>
+      <stop offset="60%" stop-color="#edf5ef"/>
+      <stop offset="100%" stop-color="#f4ece1"/>
+    </linearGradient>
+
+    <pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse">
+      <path d="M56 0H0V56" fill="none" stroke="#93c7be" stroke-opacity="0.15" stroke-width="1"/>
+    </pattern>
+
+    <pattern id="locks" width="240" height="220" patternUnits="userSpaceOnUse">
+      <g fill="none" stroke="#176d66" stroke-opacity="0.24" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="92" y="96" width="56" height="52" rx="10" stroke-width="3"/>
+        <path d="M106 96V80c0-12 10-22 22-22s22 10 22 22v16" stroke-width="3"/>
+        <circle cx="120" cy="120" r="4" fill="#176d66" fill-opacity="0.24" stroke="none"/>
+      </g>
+      <g fill="none" stroke="#cc7d4c" stroke-opacity="0.16" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="24" y="28" width="40" height="36" rx="8" stroke-width="2.5"/>
+        <path d="M34 28V18c0-8 6-14 14-14s14 6 14 14v10" stroke-width="2.5"/>
+      </g>
+      <g fill="none" stroke="#cc7d4c" stroke-opacity="0.16" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="176" y="162" width="34" height="30" rx="7" stroke-width="2"/>
+        <path d="M184 162V154c0-6 5-11 11-11s11 5 11 11v8" stroke-width="2"/>
+      </g>
+    </pattern>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect width="1600" height="900" fill="url(#grid)"/>
+  <rect width="1600" height="900" fill="url(#locks)"/>
+
+  <circle cx="1450" cy="120" r="180" fill="#82cec0" fill-opacity="0.13"/>
+  <circle cx="140" cy="760" r="220" fill="#e9aa7f" fill-opacity="0.12"/>
+  <circle cx="820" cy="-40" r="200" fill="#bde3d9" fill-opacity="0.12"/>
+</svg>

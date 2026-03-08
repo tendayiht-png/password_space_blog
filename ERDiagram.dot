@@ -1,0 +1,343 @@
+digraph password_space_blog_erd {
+  // Entity Relationship Diagram for Password Space Blog
+  // Generated: March 8, 2026
+  // Includes: Blog models, Django auth, JWT token blacklist
+
+  fontname = "Roboto"
+  fontsize = 10
+  rankdir = "TB"
+  splines = true
+  overlap = false
+  
+  node [
+    fontname = "Roboto"
+    fontsize = 9
+    shape = "plaintext"
+  ]
+
+  edge [
+    fontname = "Roboto"
+    fontsize = 8
+    dir = "both"
+  ]
+
+  // ====================
+  // CORE BLOG MODELS
+  // ====================
+
+  User [label=<
+    <TABLE BGCOLOR="white" BORDER="2" CELLBORDER="0" CELLSPACING="0">
+    <TR><TD COLSPAN="2" CELLPADDING="8" ALIGN="CENTER" BGCOLOR="#2c5f2d">
+    <FONT FACE="Roboto Bold" COLOR="white" POINT-SIZE="12"><B>User</B></FONT>
+    </TD></TR>
+    <TR><TD COLSPAN="2" BGCOLOR="#e8f5e9"><FONT FACE="Roboto" POINT-SIZE="8">Django Auth Model</FONT></TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto Bold"><B>🔑 id</B></FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">AutoField (PK)</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto"><B>username</B></FONT>
+    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">CharField (UK)</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto">email</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">EmailField</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">password</FONT>
+    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">CharField (Argon2)</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto">first_name</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">CharField</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">last_name</FONT>
+    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">CharField</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto">is_staff</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">BooleanField</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">is_active</FONT>
+    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">BooleanField</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto">is_superuser</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">BooleanField</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">date_joined</FONT>
+    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">DateTimeField</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto">last_login</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">DateTimeField</FONT>
+    </TD></TR>
+    </TABLE>
+  >]
+
+  Post [label=<
+    <TABLE BGCOLOR="white" BORDER="2" CELLBORDER="0" CELLSPACING="0">
+    <TR><TD COLSPAN="2" CELLPADDING="8" ALIGN="CENTER" BGCOLOR="#1565c0">
+    <FONT FACE="Roboto Bold" COLOR="white" POINT-SIZE="12"><B>Post</B></FONT>
+    </TD></TR>
+    <TR><TD COLSPAN="2" BGCOLOR="#e3f2fd"><FONT FACE="Roboto" POINT-SIZE="8">Blog Post Model</FONT></TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto Bold"><B>🔑 id</B></FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">BigAutoField (PK)</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto Bold"><B>🔗 author_id</B></FONT>
+    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">ForeignKey → User</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto"><B>title</B></FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">CharField (UK)</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto"><B>slug</B></FONT>
+    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">SlugField (UK)</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto">content</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">TextField</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">excerpt</FONT>
+    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">TextField (blank)</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto">status</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">IntegerField (0/1)</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">created_on</FONT>
+    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">DateTimeField (auto)</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto">updated_on</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">DateTimeField (auto)</FONT>
+    </TD></TR>
+    </TABLE>
+  >]
+
+  Comment [label=<
+    <TABLE BGCOLOR="white" BORDER="2" CELLBORDER="0" CELLSPACING="0">
+    <TR><TD COLSPAN="2" CELLPADDING="8" ALIGN="CENTER" BGCOLOR="#f57c00">
+    <FONT FACE="Roboto Bold" COLOR="white" POINT-SIZE="12"><B>Comment</B></FONT>
+    </TD></TR>
+    <TR><TD COLSPAN="2" BGCOLOR="#fff3e0"><FONT FACE="Roboto" POINT-SIZE="8">User Comment Model</FONT></TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto Bold"><B>🔑 id</B></FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">BigAutoField (PK)</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto Bold"><B>🔗 post_id</B></FONT>
+    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">ForeignKey → Post</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto Bold"><B>🔗 author_id</B></FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">ForeignKey → User</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">body</FONT>
+    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">TextField</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto">approved</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">BooleanField</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">created_on</FONT>
+    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">DateTimeField (auto)</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto">new_field</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">SlugField</FONT>
+    </TD></TR>
+    </TABLE>
+  >]
+
+  // ====================
+  // JWT TOKEN TABLES
+  // ====================
+
+  OutstandingToken [label=<
+    <TABLE BGCOLOR="white" BORDER="2" CELLBORDER="0" CELLSPACING="0">
+    <TR><TD COLSPAN="2" CELLPADDING="8" ALIGN="CENTER" BGCOLOR="#6a1b9a">
+    <FONT FACE="Roboto Bold" COLOR="white" POINT-SIZE="12"><B>OutstandingToken</B></FONT>
+    </TD></TR>
+    <TR><TD COLSPAN="2" BGCOLOR="#f3e5f5"><FONT FACE="Roboto" POINT-SIZE="8">JWT Refresh Token Tracking</FONT></TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto Bold"><B>🔑 id</B></FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">BigAutoField (PK)</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto Bold"><B>🔗 user_id</B></FONT>
+    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">ForeignKey → User</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto"><B>jti</B></FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">CharField (UK)</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">token</FONT>
+    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">TextField</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto">created_at</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">DateTimeField</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">expires_at</FONT>
+    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">DateTimeField</FONT>
+    </TD></TR>
+    </TABLE>
+  >]
+
+  BlacklistedToken [label=<
+    <TABLE BGCOLOR="white" BORDER="2" CELLBORDER="0" CELLSPACING="0">
+    <TR><TD COLSPAN="2" CELLPADDING="8" ALIGN="CENTER" BGCOLOR="#c62828">
+    <FONT FACE="Roboto Bold" COLOR="white" POINT-SIZE="12"><B>BlacklistedToken</B></FONT>
+    </TD></TR>
+    <TR><TD COLSPAN="2" BGCOLOR="#ffebee"><FONT FACE="Roboto" POINT-SIZE="8">Revoked JWT Tokens</FONT></TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto Bold"><B>🔑 id</B></FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">BigAutoField (PK)</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto Bold"><B>🔗 token_id</B></FONT>
+    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
+    <FONT FACE="Roboto">OneToOneField → OutstandingToken (UK)</FONT>
+    </TD></TR>
+    
+    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
+    <FONT FACE="Roboto">blacklisted_at</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">DateTimeField (auto)</FONT>
+    </TD></TR>
+    </TABLE>
+  >]
+
+  // ====================
+  // RELATIONSHIPS
+  // ====================
+
+  // Blog relationships
+  User -> Post [
+    arrowhead = "crow"
+    arrowtail = "none"
+    label = "  authors  "
+    fontsize = 9
+    color = "#1565c0"
+  ]
+
+  User -> Comment [
+    arrowhead = "crow"
+    arrowtail = "none"
+    label = "  writes  "
+    fontsize = 9
+    color = "#f57c00"
+  ]
+
+  Post -> Comment [
+    arrowhead = "crow"
+    arrowtail = "none"
+    label = "  has  "
+    fontsize = 9
+    color = "#f57c00"
+  ]
+
+  // JWT relationships
+  User -> OutstandingToken [
+    arrowhead = "crow"
+    arrowtail = "none"
+    label = "  owns tokens  "
+    fontsize = 9
+    color = "#6a1b9a"
+  ]
+
+  OutstandingToken -> BlacklistedToken [
+    arrowhead = "tee"
+    arrowtail = "none"
+    label = "  may be revoked  "
+    fontsize = 9
+    color = "#c62828"
+    style = "dashed"
+  ]
+
+  // Layout hints
+  { rank = same; Post; Comment; }
+  { rank = same; OutstandingToken; BlacklistedToken; }
+}
