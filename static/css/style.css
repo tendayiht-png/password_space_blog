@@ -1,12 +1,12 @@
 /* Colors and Variables */
 :root {
-    --primary-color: #2a3f5f;
-    --accent-color: #d63384;
-    --light-bg: #f7f7f7;
-    --dark-bg: #23252f;
-    --border-color: #dee2e6;
-    --text-color: #333;
-    --muted-text: #6c757d;
+    --primary-color: #8B5A2B;
+    --accent-color: #D97706;
+    --light-bg: #FEF3E2;
+    --dark-bg: #5D4037;
+    --border-color: #E8D4C4;
+    --text-color: #4A3728;
+    --muted-text: #8B7355;
 }
 
 /* General Styling */
@@ -18,7 +18,7 @@
 
 html, body {
     height: 100%;
-    font-family: 'Lato', sans-serif;
+    font-family: 'Tahoma', 'Trebuchet MS', sans-serif;
     color: var(--text-color);
 }
 
@@ -153,9 +153,9 @@ body {
 }
 
 .btn-primary:hover {
-    background-color: #c41e6f;
+    background-color: #CA6504;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(214, 51, 132, 0.3);
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
 }
 
 .btn-secondary {
