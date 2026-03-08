@@ -1,4 +1,4 @@
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, TemplateView
 from .models import Post
 
 
@@ -17,3 +17,18 @@ class PostDetail(DetailView):
     slug_url_kwarg = 'slug'
 
 
+class HowToPageView(TemplateView):
+    template_name = 'how_to_page.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'How to Set Up Two-Factor Authentication (2FA)'
+        context['description'] = 'Step-by-step guide to enable 2FA on your accounts and protect them from unauthorized access.'
+        context['time_estimate'] = 'Estimated Time: 5-8 min'
+        context['difficulty'] = 'Difficulty: Beginner'
+        context['outcome'] = 'Outcome: Account protected'
+        return context
+
+
+class ChecklistPageView(TemplateView):
+    template_name = 'checklist_page.html'

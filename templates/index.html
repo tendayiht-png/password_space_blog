@@ -1,51 +1,61 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
+<main class="container">
+  <section class="hero">
+    <article class="hero-card reveal">
+      <span class="badge">Personal Cybersecurity</span>
+      <h1>Practical password security for everyone</h1>
+      <p>
+        Learn how to protect your accounts with strategies that actually work. From two-factor authentication to password managers, we break down security concepts into actionable steps.
+      </p>
+      <div class="pill-row">
+        <span class="pill">Long > Complex</span>
+        <span class="pill">Unique > Same</span>
+        <span class="pill">Managed > Handwritten</span>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#featured">Explore Articles</a>
+        <a class="btn btn-secondary" href="#about">Learn Our Approach</a>
+      </div>
+    </article>
 
-<!-- index.html content starts here -->
-<div class="container-fluid">
-    <div class="row">
+    <aside class="info-card reveal">
+      <h2>Our Focus</h2>
+      <ul class="info-list">
+        <li>Start with one clear security problem you face</li>
+        <li>Provide checklists and examples you can use immediately</li>
+        <li>End with one concrete next action</li>
+      </ul>
+      <p>
+        All articles are written for busy people who want practical security without the jargon.
+      </p>
+    </aside>
+  </section>
 
-        <!-- Blog Entries Column -->
-        <div class="col-12 mt-3 left">
-            <div class="row">
-                {% for post in post_list %}
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <a href="{% url 'post_detail' post.slug %}" class="post-link">
-                                <h2 class="card-title">{{ post.title }}</h2>
-                            </a>
-                            <p class="card-text">{{ post.excerpt }}</p>
-                            <hr />
-                            <p class="card-text text-muted h6">
-                                <i class="far fa-calendar"></i> {{ post.created_on|date:"M d, Y" }}
-                            </p>
-                            <a href="{% url 'post_detail' post.slug %}" class="btn btn-outline-primary btn-sm">Read More →</a>
-                        </div>
-                    </div>
-                </div>
-                {% if forloop.counter|divisibleby:3 %}
-            </div>
-            <div class="row">
-                {% endif %}
-                {% endfor %}
+  {% if post_list %}
+    <h2 class="section-title" id="featured">Latest Articles</h2>
+    <section class="grid">
+      {% for post in post_list %}
+        <article class="card reveal">
+          <h3>{{ post.title }}</h3>
+          <p class="card-text">{{ post.excerpt|truncatewords:20 }}</p>
+          <div style="font-size: 0.85rem; color: var(--muted); margin-top: 8px;">
+            {{ post.created_on|date:"M d, Y" }}
+          </div>
+          <a href="{% url 'post_detail' post.slug %}" style="display: inline-block; margin-top: 12px;">Read Article →</a>
+        </article>
+      {% endfor %}
+    </section>
+  {% else %}
+    <p>No posts available yet.</p>
+  {% endif %}
 
-            </div>
-        </div>
-    </div>
-    {% if is_paginated %}
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-            {% if page_obj.has_next %}
-            <li><a href="?page={{ page_obj.next_page_number }}" class="page-link"> NEXT &raquo;</a></li>
-            {% endif %}
-        </ul>
-    </nav>
-    {% endif %}
-</div>
-
-<!-- index.html content ends here -->
+  <footer class="footer">
+    <p>Password Safe Blog © 2026 - Protecting Your Digital Life</p>
+  </footer>
+</main>
 {% endblock %}
 
 
