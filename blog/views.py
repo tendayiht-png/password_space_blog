@@ -32,6 +32,11 @@ class PostList(ListView):
     context_object_name = 'post_list'
     queryset = Post.objects.all().order_by('-created_on')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['recent_ideas'] = Idea.objects.select_related('owner').order_by('-created_on')[:6]
+        return context
+
 
 class PostDetail(DetailView):
     model = Post
@@ -262,6 +267,7 @@ def ideas_page(request):
             'form_data': form_data,
             'errors': errors,
             'success_message': success_message,
+            'community_ideas': Idea.objects.select_related('owner').order_by('-created_on'),
         },
     )
 
