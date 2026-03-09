@@ -2,6 +2,7 @@ import json
 from datetime import timedelta
 
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -93,6 +94,7 @@ def edit_idea_page(request, idea_id):
             idea_obj.title = form_data['title']
             idea_obj.idea = form_data['idea']
             idea_obj.save(update_fields=['title', 'idea'])
+            messages.success(request, 'Your idea was updated successfully.')
             return redirect('my_ideas_page')
 
     return render(
@@ -111,6 +113,7 @@ def edit_idea_page(request, idea_id):
 def delete_idea(request, idea_id):
     idea_obj = get_object_or_404(Idea, pk=idea_id, owner=request.user)
     idea_obj.delete()
+    messages.success(request, 'Your idea was deleted successfully.')
     return redirect('my_ideas_page')
 
 
@@ -249,13 +252,8 @@ def ideas_page(request):
             _record_idea_submission(client_ip)
             _send_idea_notification_email(idea_obj)
             _send_idea_confirmation_email(idea_obj)
-            success_message = 'Thank you, your idea has been submitted.'
-            form_data = {
-                'name': '',
-                'email': '',
-                'title': '',
-                'idea': '',
-            }
+            messages.success(request, 'Thank you, your idea has been submitted.')
+            return redirect('ideas_page')
 
     return render(
         request,
