@@ -41,6 +41,7 @@
                 <a class="nav-link" href="{% url 'checklist_page' %}">Breach Checklist</a>
                 <a class="nav-link" href="{% url 'ideas_page' %}">Share Ideas</a>
                 {% if user.is_authenticated %}
+                    <a class="nav-link" href="{% url 'my_ideas_page' %}">My Ideas</a>
                     <a class="nav-link" href="{% url 'settings_page' %}">Account Settings</a>
                     <a class="nav-link" href="#" id="logoutLink" style="cursor: pointer;">Logout</a>
                 {% else %}

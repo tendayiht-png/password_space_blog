@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container py-4">
+  <section class="hero-card reveal" style="max-width: 980px; margin: 0 auto;">
+    <span class="badge">My Ideas</span>
+    <h1 style="margin-top: 12px;">Your submitted ideas</h1>
+    <p>View, edit, or delete ideas you submitted while logged into your account.</p>
+
+    {% if ideas %}
+      <div class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead>
+            <tr>
+              <th scope="col">Title</th>
+              <th scope="col">Submitted</th>
+              <th scope="col">Status</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for idea in ideas %}
+              <tr>
+                <td>{{ idea.title|default:"Untitled" }}</td>
+                <td>{{ idea.created_on|date:"M d, Y H:i" }}</td>
+                <td>
+                  {% if idea.reviewed %}
+                    <span class="badge bg-success">Reviewed</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Pending</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <a class="btn btn-sm btn-outline-primary" href="{% url 'edit_idea_page' idea.id %}">Edit</a>
+                  <form method="post" action="{% url 'delete_idea' idea.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this idea?');">
+                      Delete
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p>You have not submitted any ideas yet.</p>
+      <a class="btn btn-primary" href="{% url 'ideas_page' %}">Submit your first idea</a>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}

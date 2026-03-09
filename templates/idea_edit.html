@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container py-4">
+  <section class="hero-card reveal" style="max-width: 860px; margin: 0 auto;">
+    <span class="badge">Edit Idea</span>
+    <h1 style="margin-top: 12px;">Update your idea</h1>
+    <p>Make any changes and save them below.</p>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label for="title" class="form-label">Idea title (optional)</label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          class="form-control"
+          value="{{ form_data.title }}"
+        >
+      </div>
+
+      <div class="mb-3">
+        <label for="idea" class="form-label">Your idea</label>
+        <textarea
+          id="idea"
+          name="idea"
+          class="form-control"
+          rows="7"
+          required
+        >{{ form_data.idea }}</textarea>
+        {% if errors.idea %}<div class="text-danger mt-1">{{ errors.idea }}</div>{% endif %}
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Save changes</button>
+        <a class="btn btn-secondary" href="{% url 'my_ideas_page' %}">Cancel</a>
+      </div>
+    </form>
+  </section>
+</main>
+{% endblock %}

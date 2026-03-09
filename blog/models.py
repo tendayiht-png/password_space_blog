@@ -41,6 +41,13 @@ class Comment(models.Model):
 
 
 class Idea(models.Model):
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="submitted_ideas",
+    )
     name = models.CharField(max_length=120)
     email = models.EmailField()
     title = models.CharField(max_length=200, blank=True)

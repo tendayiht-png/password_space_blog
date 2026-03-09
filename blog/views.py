@@ -14,7 +14,7 @@ from django.core.mail import send_mail
 from django.core.validators import validate_email
 from django.db import transaction
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -62,6 +62,56 @@ class ChecklistPageView(TemplateView):
 
 class RegisterPageView(TemplateView):
     template_name = 'register.html'
+
+
+@login_required(login_url='/login/')
+def my_ideas_page(request):
+    ideas = Idea.objects.filter(owner=request.user).order_by('-created_on')
+    return render(request, 'my_ideas.html', {'ideas': ideas})
+
+
+@login_required(login_url='/login/')
+@require_http_methods(['GET', 'POST'])
+def edit_idea_page(request, idea_id):
+    idea_obj = get_object_or_404(Idea, pk=idea_id, owner=request.user)
+    errors = {}
+    form_data = {
+        'title': idea_obj.title,
+        'idea': idea_obj.idea,
+    }
+
+    if request.method == 'POST':
+        form_data = {
+            'title': request.POST.get('title', '').strip(),
+            'idea': request.POST.get('idea', '').strip(),
+        }
+
+        if not form_data['idea']:
+            errors['idea'] = 'Idea content cannot be empty.'
+
+        if not errors:
+            idea_obj.title = form_data['title']
+            idea_obj.idea = form_data['idea']
+            idea_obj.save(update_fields=['title', 'idea'])
+            return redirect('my_ideas_page')
+
+    return render(
+        request,
+        'idea_edit.html',
+        {
+            'idea_obj': idea_obj,
+            'form_data': form_data,
+            'errors': errors,
+        },
+    )
+
+
+@login_required(login_url='/login/')
+@require_http_methods(['POST'])
+def delete_idea(request, idea_id):
+    idea_obj = get_object_or_404(Idea, pk=idea_id, owner=request.user)
+    idea_obj.delete()
+    return redirect('my_ideas_page')
 
 
 def _get_client_ip(request):
@@ -143,8 +193,8 @@ def _send_idea_confirmation_email(idea_obj):
 def ideas_page(request):
     """Render and handle the user ideas submission form."""
     form_data = {
-        'name': '',
-        'email': '',
+        'name': request.user.get_full_name() or request.user.username if request.user.is_authenticated else '',
+        'email': request.user.email if request.user.is_authenticated else '',
         'title': '',
         'idea': '',
     }
@@ -190,6 +240,7 @@ def ideas_page(request):
 
         if not errors:
             idea_obj = Idea.objects.create(
+                owner=request.user if request.user.is_authenticated else None,
                 name=form_data['name'],
                 email=form_data['email'],
                 title=form_data['title'],

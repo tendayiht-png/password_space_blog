@@ -9,6 +9,17 @@
       Have a topic you want covered on Password Safe Blog? Send your idea and we will review it for upcoming content.
     </p>
 
+    {% if user.is_authenticated %}
+      <p class="mb-3">
+        Signed in as <strong>{{ user.username }}</strong>. You can manage your submissions on
+        <a href="{% url 'my_ideas_page' %}">My Ideas</a>.
+      </p>
+    {% else %}
+      <p class="mb-3">
+        <a href="{% url 'login_page' %}">Log in</a> to edit and delete your own ideas later.
+      </p>
+    {% endif %}
+
     {% if success_message %}
       <div class="alert alert-success" role="alert">{{ success_message }}</div>
     {% endif %}

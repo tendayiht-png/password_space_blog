@@ -18,9 +18,9 @@ class CommentAdmin(admin.ModelAdmin):
 
 @admin.register(Idea)
 class IdeaAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'title', 'reviewed', 'created_on')
-    list_filter = ('reviewed', 'created_on')
-    search_fields = ('name', 'email', 'title', 'idea')
+    list_display = ('name', 'email', 'owner', 'title', 'reviewed', 'created_on')
+    list_filter = ('reviewed', 'created_on', 'owner')
+    search_fields = ('name', 'email', 'title', 'idea', 'owner__username')
 
 
 
