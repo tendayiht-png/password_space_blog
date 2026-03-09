@@ -72,8 +72,49 @@ class RegisterPageView(TemplateView):
 
 @login_required(login_url='/login/')
 def my_ideas_page(request):
+    from datetime import datetime, timedelta
+    from django.db.models import Q
+    
     ideas = Idea.objects.filter(owner=request.user).order_by('-created_on')
-    return render(request, 'my_ideas.html', {'ideas': ideas})
+    
+    # Get filter parameters
+    filter_type = request.GET.get('filter', 'all')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+    
+    # Apply preset filters
+    today = datetime.now()
+    if filter_type == 'this_week':
+        start_date = today - timedelta(days=today.weekday())
+        ideas = ideas.filter(created_on__gte=start_date)
+    elif filter_type == 'this_month':
+        start_date = today.replace(day=1)
+        ideas = ideas.filter(created_on__gte=start_date)
+    elif filter_type == 'this_year':
+        start_date = today.replace(month=1, day=1)
+        ideas = ideas.filter(created_on__gte=start_date)
+    elif filter_type == 'custom':
+        # Custom date range filtering
+        if date_from:
+            try:
+                from_date = datetime.strptime(date_from, '%Y-%m-%d')
+                ideas = ideas.filter(created_on__gte=from_date)
+            except ValueError:
+                pass
+        if date_to:
+            try:
+                to_date = datetime.strptime(date_to, '%Y-%m-%d')
+                to_date = to_date.replace(hour=23, minute=59, second=59)
+                ideas = ideas.filter(created_on__lte=to_date)
+            except ValueError:
+                pass
+    
+    return render(request, 'my_ideas.html', {
+        'ideas': ideas,
+        'filter_type': filter_type,
+        'date_from': date_from,
+        'date_to': date_to,
+    })
 
 
 @login_required(login_url='/login/')

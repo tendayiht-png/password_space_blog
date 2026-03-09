@@ -7,6 +7,34 @@
     <h1 style="margin-top: 12px;">Your submitted ideas</h1>
     <p>View, edit, or delete ideas you submitted while logged into your account.</p>
 
+    <!-- Date Filter Section -->
+    <div style="margin: 24px 0; padding: 16px; background: var(--panel-strong); border-radius: 12px; border: 1px solid var(--line);">
+      <h3 style="margin-top: 0; font-size: 0.95rem; color: var(--ink);">Filter by Date</h3>
+      
+      <!-- Quick Filter Buttons -->
+      <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+        <a href="?filter=all" class="btn btn-sm {% if filter_type == 'all' or not filter_type %}btn-primary{% else %}btn-outline-primary{% endif %}" style="padding: 6px 12px; font-size: 0.85rem;">All Time</a>
+        <a href="?filter=this_week" class="btn btn-sm {% if filter_type == 'this_week' %}btn-primary{% else %}btn-outline-primary{% endif %}" style="padding: 6px 12px; font-size: 0.85rem;">This Week</a>
+        <a href="?filter=this_month" class="btn btn-sm {% if filter_type == 'this_month' %}btn-primary{% else %}btn-outline-primary{% endif %}" style="padding: 6px 12px; font-size: 0.85rem;">This Month</a>
+        <a href="?filter=this_year" class="btn btn-sm {% if filter_type == 'this_year' %}btn-primary{% else %}btn-outline-primary{% endif %}" style="padding: 6px 12px; font-size: 0.85rem;">This Year</a>
+      </div>
+
+      <!-- Custom Date Range Filter -->
+      <form method="get" style="display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap;">
+        <div>
+          <label for="date_from" style="display: block; font-size: 0.85rem; margin-bottom: 4px; font-weight: 600;">From:</label>
+          <input type="date" id="date_from" name="date_from" value="{{ date_from }}" style="padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; font-size: 0.9rem;">
+        </div>
+        <div>
+          <label for="date_to" style="display: block; font-size: 0.85rem; margin-bottom: 4px; font-weight: 600;">To:</label>
+          <input type="date" id="date_to" name="date_to" value="{{ date_to }}" style="padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; font-size: 0.9rem;">
+        </div>
+        <input type="hidden" name="filter" value="custom">
+        <button type="submit" class="btn btn-sm btn-primary" style="padding: 6px 12px; font-size: 0.85rem;">Apply</button>
+        <a href="?" class="btn btn-sm btn-outline-secondary" style="padding: 6px 12px; font-size: 0.85rem;">Clear</a>
+      </form>
+    </div>
+
     {% if ideas %}
       <div class="table-responsive">
         <table class="table table-striped align-middle">
@@ -45,8 +73,12 @@
         </table>
       </div>
     {% else %}
-      <p>You have not submitted any ideas yet.</p>
-      <a class="btn btn-primary" href="{% url 'ideas_page' %}">Submit your first idea</a>
+      {% if filter_type != 'all' and filter_type %}
+        <p style="text-align: center; padding: 24px 0;">No ideas found for the selected date range. <a href="?">View all ideas</a></p>
+      {% else %}
+        <p>You have not submitted any ideas yet.</p>
+        <a class="btn btn-primary" href="{% url 'ideas_page' %}">Submit your first idea</a>
+      {% endif %}
     {% endif %}
   </section>
 </main>
