@@ -88,6 +88,14 @@ body::after {
   padding: 14px 0 !important;
 }
 
+.nav-shell {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
 .navbar-brand {
   display: inline-flex;
   align-items: center;
@@ -686,8 +694,17 @@ a:hover {
 }
 
 @media (max-width: 600px) {
+  .nav-shell {
+    align-items: flex-start;
+  }
+
+  .navbar-brand {
+    width: 100%;
+  }
+
   .top-nav {
     justify-content: flex-start;
+    width: 100%;
     gap: 6px;
   }
 

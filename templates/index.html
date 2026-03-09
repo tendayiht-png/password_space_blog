@@ -4,23 +4,16 @@
 {% block content %}
 <main class="container">
   <section class="hero">
-    <article class="hero-card reveal">
+    <article class="hero-card reveal" id="about">
       <span class="badge">Personal Cybersecurity</span>
-      <!-- About Section -->
-    <p>
-    <ul>
-    <li>Core Mission</li>
-    <li>Practical Security: Actionable, simple tips for complex digital threats.</li>
-    <li>Accessible Expert Advice: Breaking down security concepts into easy, implementable steps.</li>
-    <li>Key Content & Guides</li>
-    <li>The "One Password" Roadmap: A beginner’s guide to moving from password recycling to using a trusted manager.</li>
-    <li>Demystifying 2FA: Step-by-step setup for banking, email, and social media.</li>
-    <li>Real-World Examples: Anonymous "bad password" case studies showing how managers fix common errors.</li>
-    <li>Interactive Features</li>
-    <li>Password Strength Tool: Test potential passwords for security.</li>
-    <li>Expert Q&A: Articles designed to answer specific personal security questions.</li>
-    </ul>
-  </p>
+      <p>
+        Practical security guidance for everyday users, with clear steps you can apply right away.
+      </p>
+      <ul class="info-list">
+        <li><strong>Core Mission:</strong> Simple, actionable advice for complex digital threats.</li>
+        <li><strong>Guides:</strong> Password manager adoption, 2FA setup, and real-world examples.</li>
+        <li><strong>Interactive Focus:</strong> Practical Q&amp;A and community-driven content ideas.</li>
+      </ul>
 
     <div class="pill-row">
         <span class="pill">Long > Complex</span>
@@ -81,10 +74,6 @@
   <p style="margin-top: 12px;">
     <a href="{% url 'ideas_page' %}">View all ideas and join the discussion →</a>
   </p>
-
-  <footer class="footer">
-    <p>Password Safe Blog © 2026 - Protecting Your Digital Life</p>
-  </footer>
 </main>
 {% endblock %}
 
