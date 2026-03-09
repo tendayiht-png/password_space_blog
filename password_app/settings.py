@@ -71,32 +71,33 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
-WSGI_APPLICATION = 'password_app.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DATABASE_URL:
+    # Use PostgreSQL in Heroku/production.
+    DATABASES = {
+        'default': dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+            ssl_require=not DEBUG,
+        )
     }
-}
-
-# Use PostgreSQL on Heroku if DATABASE_URL is set
-if 'DATABASE_URL' in os.environ:
-    DATABASES['default'] = dj_database_url.config(
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
-
-
+else:
+    # Keep sqlite for local development when DATABASE_URL is not configured.
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        },
+        'default': {
+            'ENGINE': 'postgresql',
+            'NAME': os.environ.get('POSTGRES_DB', 'password_app_db'),
+            'USER': os.environ.get('POSTGRES_USER', 'password_app_user'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password_app_password'),   
+        }
+    }
+    
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
