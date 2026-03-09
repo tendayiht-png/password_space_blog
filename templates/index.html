@@ -2,11 +2,14 @@
 {% load static %}
 
 {% block content %}
-<main class="container">
+<div>
+  <img src="{% static 'images/password_image.jpg' %}" alt="Illustration of a person managing their passwords on a laptop" style="width: 100%; border-radius: 12px; margin-top: 16px;">
+</div>
+<br>
+<main class="container" style="width: 100%; max-width: none; padding: 0;">
   <section class="hero">
     <article class="hero-card reveal" id="about">
       <span class="badge">Personal Cybersecurity</span>         
-      <img src="{% static 'images/password_image.jpg' %}" alt="Illustration of a person managing their passwords on a laptop" style="width: 100%; border-radius: 12px; margin-top: 16px;">
       <h1>Password Safe Blog</h1>
       <p>
         Practical security guidance for everyday users, with clear steps you can apply right away.
@@ -78,6 +81,12 @@
   </p>
 </main>
 {% endblock %}
+
+.container-full {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
 
 
 
