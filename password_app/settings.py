@@ -71,6 +71,17 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = 'password_app.wsgi.application'
+
+
+# Database
+# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
 if DATABASE_URL:
@@ -89,14 +100,9 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
-        },
-        'default': {
-            'ENGINE': 'postgresql',
-            'NAME': os.environ.get('POSTGRES_DB', 'password_app_db'),
-            'USER': os.environ.get('POSTGRES_USER', 'password_app_user'),
-            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password_app_password'),   
         }
     }
+
     
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
