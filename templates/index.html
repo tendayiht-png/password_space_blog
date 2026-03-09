@@ -20,17 +20,21 @@
         <a class="btn btn-secondary" href="#about">Learn Our Approach</a>
       </div>
     </article>
-
-    <aside class="info-card reveal" id="about">
-      <h1>Password Safe Blog</h1>
-      <p>
-        Simple security tips for complex threats. Protecting your digital life with practical, 
-        actionable guidance on passwords, 2FA, and account security.
-      </p>
-      <ul class="info-list">
-        <li>Start with one clear security problem you face</li>
-        <li>Provide checklists and examples you can use immediately</li>
-        <li>End with one concrete next action</li>
+    <!-- About Section -->
+    <div class="col-md-4 mb-3">
+    <h1 id="about" style="color: var(--brand); margin-bottom: 15px;">Password Safe Blog</h1>
+    <p style="font-size: 0.9rem; line-height: 1.6;">
+    Simple security tips for complex threats. Protecting your digital life with practical, actionable guidance on passwords, 2FA, and account security.
+    </p>
+    </div>     
+    
+    <ul class="info-list">
+      <li>This blog is about User-Focused & Interactive Content sharing practical password security advice. Ideas will include "anonymous" user examples of bad passwords (and how the password manager assists to fix them).</li>
+      <li>An interactive tool where users can enter a potential password to see its strength.</li>
+      <li>The "One Password to Rule Them All" Blog: A beginner's guide to transitioning from using the same password everywhere to using a manager.</li>
+      <li>Start with one clear security problem you face</li>
+      <li>Provide checklists and examples you can use immediately</li>
+      <li>Encourage readers to share their own password security questions and ideas for future articles</li>
       </ul>
     </aside>
   </section>
@@ -57,7 +61,7 @@
     <span class="badge">Help Shape This Blog</span>
     <h2 style="margin-top: 12px;">Have an idea for our next article?</h2>
     <p>
-       Share "anonymous" examples of bad passwords (and how the password manager would repair them. Share security topics, password questions, or practical guides you want us to publish.
+       Share "anonymous" examples of bad passwords (and how the password manager would repair them. Share feedback about security topics, password questions, or practical guides you want us to publish.
     </p>
     <a class="btn btn-primary" href="{% url 'ideas_page' %}">Submit Your Idea</a>
   </section>
