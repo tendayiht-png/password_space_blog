@@ -147,6 +147,22 @@ STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
+# Email defaults for local development and idea notifications.
+EMAIL_BACKEND = os.environ.get(
+    'EMAIL_BACKEND',
+    'django.core.mail.backends.console.EmailBackend',
+)
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@passwordspaceblog.com')
+
+# Idea submission controls.
+IDEA_SUBMISSION_LIMIT = int(os.environ.get('IDEA_SUBMISSION_LIMIT', '3'))
+IDEA_SUBMISSION_WINDOW_SECONDS = int(os.environ.get('IDEA_SUBMISSION_WINDOW_SECONDS', '3600'))
+IDEA_NOTIFICATION_RECIPIENTS = [
+    email.strip()
+    for email in os.environ.get('IDEA_NOTIFICATION_RECIPIENTS', '').split(',')
+    if email.strip()
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

@@ -8,10 +8,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import default_token_generator
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
+from django.core.validators import validate_email
 from django.db import transaction
 from django.http import JsonResponse
+from django.shortcuts import render
 from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -19,7 +22,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.generic import DetailView, ListView, TemplateView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Post
+from .models import Idea, Post
 
 
 class PostList(ListView):
@@ -59,6 +62,159 @@ class ChecklistPageView(TemplateView):
 
 class RegisterPageView(TemplateView):
     template_name = 'register.html'
+
+
+def _get_client_ip(request):
+    forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR', '')
+    if forwarded_for:
+        return forwarded_for.split(',')[0].strip()
+    return request.META.get('REMOTE_ADDR', 'unknown')
+
+
+def _idea_rate_limit_key(client_ip):
+    return f'idea-submit:{client_ip}'
+
+
+def _is_idea_rate_limited(client_ip):
+    limit = int(getattr(settings, 'IDEA_SUBMISSION_LIMIT', 3))
+    current_count = int(cache.get(_idea_rate_limit_key(client_ip), 0))
+    return current_count >= limit
+
+
+def _record_idea_submission(client_ip):
+    key = _idea_rate_limit_key(client_ip)
+    window_seconds = int(getattr(settings, 'IDEA_SUBMISSION_WINDOW_SECONDS', 3600))
+    current_count = int(cache.get(key, 0)) + 1
+    cache.set(key, current_count, timeout=window_seconds)
+
+
+def _idea_notification_recipients():
+    recipients = list(getattr(settings, 'IDEA_NOTIFICATION_RECIPIENTS', []))
+    if recipients:
+        return recipients
+    return [email for _, email in getattr(settings, 'ADMINS', []) if email]
+
+
+def _send_idea_notification_email(idea_obj):
+    recipients = _idea_notification_recipients()
+    if not recipients:
+        return
+
+    subject = f"New idea submitted: {idea_obj.title or 'Untitled idea'}"
+    message = (
+        f"A new idea was submitted on Password Safe Blog.\n\n"
+        f"Name: {idea_obj.name}\n"
+        f"Email: {idea_obj.email}\n"
+        f"Title: {idea_obj.title or 'Untitled'}\n"
+        f"Submitted: {idea_obj.created_on}\n\n"
+        f"Idea:\n{idea_obj.idea}\n"
+    )
+
+    send_mail(
+        subject=subject,
+        message=message,
+        from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@passwordspaceblog.com'),
+        recipient_list=recipients,
+        fail_silently=True,
+    )
+
+
+def _send_idea_confirmation_email(idea_obj):
+    if not idea_obj.email:
+        return
+
+    subject = 'Thanks for sharing your idea with Password Safe Blog'
+    message = (
+        f"Hi {idea_obj.name},\n\n"
+        "Thanks for sending your idea. Our team has received it and will review it for future content.\n\n"
+        "Best regards,\n"
+        "Password Safe Blog Team"
+    )
+
+    send_mail(
+        subject=subject,
+        message=message,
+        from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@passwordspaceblog.com'),
+        recipient_list=[idea_obj.email],
+        fail_silently=True,
+    )
+
+
+def ideas_page(request):
+    """Render and handle the user ideas submission form."""
+    form_data = {
+        'name': '',
+        'email': '',
+        'title': '',
+        'idea': '',
+    }
+    errors = {}
+    success_message = ''
+
+    if request.method == 'POST':
+        # Hidden honeypot field catches basic form bots.
+        if request.POST.get('website', '').strip():
+            success_message = 'Thank you, your idea has been submitted.'
+            return render(
+                request,
+                'ideas.html',
+                {
+                    'form_data': form_data,
+                    'errors': errors,
+                    'success_message': success_message,
+                },
+            )
+
+        client_ip = _get_client_ip(request)
+        form_data = {
+            'name': request.POST.get('name', '').strip(),
+            'email': request.POST.get('email', '').strip(),
+            'title': request.POST.get('title', '').strip(),
+            'idea': request.POST.get('idea', '').strip(),
+        }
+
+        if not form_data['name']:
+            errors['name'] = 'Please enter your name.'
+        if not form_data['email']:
+            errors['email'] = 'Please enter your email.'
+        elif form_data['email']:
+            try:
+                validate_email(form_data['email'])
+            except ValidationError:
+                errors['email'] = 'Please enter a valid email address.'
+        if not form_data['idea']:
+            errors['idea'] = 'Please share your idea.'
+
+        if _is_idea_rate_limited(client_ip):
+            errors['non_field'] = 'Too many submissions from this connection. Please try again in about an hour.'
+
+        if not errors:
+            idea_obj = Idea.objects.create(
+                name=form_data['name'],
+                email=form_data['email'],
+                title=form_data['title'],
+                idea=form_data['idea'],
+            )
+            _record_idea_submission(client_ip)
+            _send_idea_notification_email(idea_obj)
+            _send_idea_confirmation_email(idea_obj)
+            success_message = 'Thank you, your idea has been submitted.'
+            form_data = {
+                'name': '',
+                'email': '',
+                'title': '',
+                'idea': '',
+            }
+
+    return render(
+        request,
+        'ideas.html',
+        {
+            'form_data': form_data,
+            'errors': errors,
+            'success_message': success_message,
+        },
+    )
 
 
 def _parse_request_payload(request):
