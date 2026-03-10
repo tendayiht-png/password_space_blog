@@ -204,6 +204,19 @@ document.addEventListener('DOMContentLoaded', function() {
     resultDiv.className = 'form-result ' + type;
     resultDiv.style.display = 'block';
   }
+
+  // Show/hide password toggle
+  const toggleBtn = document.getElementById('togglePassword');
+  const eyeIcon = document.getElementById('eyeIcon');
+  const eyeOffIcon = document.getElementById('eyeOffIcon');
+
+  toggleBtn.addEventListener('click', function () {
+    const isHidden = passwordInput.type === 'password';
+    passwordInput.type = isHidden ? 'text' : 'password';
+    eyeIcon.style.display = isHidden ? 'none' : 'inline';
+    eyeOffIcon.style.display = isHidden ? 'inline' : 'none';
+    toggleBtn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+  });
 });
 </script>
 {% endblock %}
