@@ -163,9 +163,9 @@ document.addEventListener('DOMContentLoaded', function() {
       if (response.ok && data.ok) {
         showMessage('Login successful! Redirecting...', 'success');
         
-        // Redirect to settings or homepage
+        // Redirect to My Ideas (fallback if API omits redirect)
         setTimeout(() => {
-          window.location.href = data.redirect || '/settings/';
+          window.location.href = data.redirect || '/ideas/my/';
         }, 1000);
       } else {
         showMessage(data.message || 'Invalid email, username, or password.', 'error');
