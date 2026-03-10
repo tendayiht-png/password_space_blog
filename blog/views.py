@@ -218,6 +218,9 @@ def _idea_notification_recipients():
     recipients = list(getattr(settings, 'IDEA_NOTIFICATION_RECIPIENTS', []))
     if recipients:
         return recipients
+    admin_email = getattr(settings, 'ADMIN_EMAIL', '').strip()
+    if admin_email:
+        return [admin_email]
     return [email for _, email in getattr(settings, 'ADMINS', []) if email]
 
 
