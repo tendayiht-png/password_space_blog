@@ -7,11 +7,10 @@
       <span class="badge">Account Setup</span>
       <h1>Create your account securely</h1>
       <p>
-        Pick a unique username and a strong password. We provide real-time strength guidance
-        and reject weak credentials server-side.
+        Pick a unique email and a strong password. We provide real-time strength guidance and reject weak credentials server-side.
       </p>
       <div class="pill-row">
-        <span class="pill">Unique Username</span>
+        <span class="pill">Unique Email</span>
         <span class="pill">Strong Password</span>
         <span class="pill">Hashed with Argon2</span>
       </div>
@@ -20,7 +19,7 @@
     <aside class="info-card reveal">
       <h2>Security Rules</h2>
       <ul class="info-list">
-        <li>Username must not already exist.</li>
+        <li>Email must not already exist.</li>
         <li>Password must satisfy strength and complexity checks.</li>
         <li>Passwords are never stored as plain text.</li>
       </ul>
@@ -32,10 +31,10 @@
       {% csrf_token %}
 
       <div class="field">
-        <label for="username">Username</label>
-        <input id="username" name="username" type="text" autocomplete="username" required />
-        <p id="username-help" class="field-help" aria-live="polite"></p>
-        <p id="username-error" class="field-error" aria-live="polite"></p>
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" autocomplete="username" required />
+        <p id="email-help" class="field-help" aria-live="polite"></p>
+        <p id="email-error" class="field-error" aria-live="polite"></p>
       </div>
 
       <div class="field">
@@ -74,12 +73,12 @@
 <script>
   (function () {
     const form = document.getElementById("register-form");
-    const usernameInput = document.getElementById("username");
+    const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
     const confirmInput = document.getElementById("confirm-password");
 
-    const usernameHelp = document.getElementById("username-help");
-    const usernameError = document.getElementById("username-error");
+    const emailHelp = document.getElementById("email-help");
+    const emailError = document.getElementById("email-error");
     const passwordError = document.getElementById("password-error");
     const confirmError = document.getElementById("confirm-password-error");
     const resultMessage = document.getElementById("form-result");
@@ -93,7 +92,7 @@
     const colors = ["#b91c1c", "#ea580c", "#d97706", "#0f766e", "#0a5c56"];
 
     function resetErrors() {
-      usernameError.textContent = "";
+      emailError.textContent = "";
       passwordError.textContent = "";
       confirmError.textContent = "";
       resultMessage.textContent = "";
@@ -121,36 +120,36 @@
       return score;
     }
 
-    let usernameCheckTimer = null;
-    usernameInput.addEventListener("input", function () {
-      usernameHelp.textContent = "";
-      usernameError.textContent = "";
-      if (usernameCheckTimer) {
-        clearTimeout(usernameCheckTimer);
+    let emailCheckTimer = null;
+    emailInput.addEventListener("input", function () {
+      emailHelp.textContent = "";
+      emailError.textContent = "";
+      if (emailCheckTimer) {
+        clearTimeout(emailCheckTimer);
       }
-      usernameCheckTimer = setTimeout(checkUsernameAvailability, 250);
+      emailCheckTimer = setTimeout(checkEmailAvailability, 250);
     });
 
-    async function checkUsernameAvailability() {
-      const username = usernameInput.value.trim();
-      if (!username) {
-        usernameHelp.textContent = "";
+    async function checkEmailAvailability() {
+      const email = emailInput.value.trim();
+      if (!email) {
+        emailHelp.textContent = "";
         return;
       }
 
       try {
-        const response = await fetch("/API/register?username=" + encodeURIComponent(username));
+        const response = await fetch("/API/register?email=" + encodeURIComponent(email));
         const data = await response.json();
 
         if (response.ok && data.available) {
-          usernameHelp.textContent = "Username is available.";
+          emailHelp.textContent = "Email is available.";
         } else if (response.ok && data.exists) {
-          usernameHelp.textContent = "Username is already taken.";
+          emailHelp.textContent = "Email is already taken.";
         } else {
-          usernameHelp.textContent = data.message || "Unable to validate username right now.";
+          emailHelp.textContent = data.message || "Unable to validate email right now.";
         }
       } catch (error) {
-        usernameHelp.textContent = "Unable to validate username right now.";
+        emailHelp.textContent = "Unable to validate email right now.";
       }
     }
 
@@ -167,7 +166,7 @@
       }
 
       const payload = {
-        username: usernameInput.value.trim(),
+        email: emailInput.value.trim(),
         password: passwordInput.value,
         confirm_password: confirmInput.value,
       };
@@ -189,13 +188,13 @@
           resultMessage.className = "form-result success";
           form.reset();
           updateStrength();
-          usernameHelp.textContent = "";
+          emailHelp.textContent = "";
           return;
         }
 
         const errors = data.errors || {};
-        if (errors.username) {
-          usernameError.textContent = errors.username.join(" ");
+        if (errors.email) {
+          emailError.textContent = errors.email.join(" ");
         }
         if (errors.password) {
           passwordError.textContent = errors.password.join(" ");
@@ -204,7 +203,7 @@
           confirmError.textContent = errors.confirm_password.join(" ");
         }
 
-        if (!errors.username && !errors.password && !errors.confirm_password) {
+        if (!errors.email && !errors.password && !errors.confirm_password) {
           resultMessage.textContent = data.message || "Registration failed.";
           resultMessage.className = "form-result error";
         }
