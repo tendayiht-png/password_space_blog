@@ -392,6 +392,17 @@ class SettingsPageView(LoginRequiredMixin, TemplateView):
     template_name = 'settings.html'
     login_url = '/register/'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        display_email = (self.request.user.email or '').strip()
+
+        # Backward compatibility for accounts created when email was stored in username.
+        if not display_email and '@' in self.request.user.username:
+            display_email = self.request.user.username
+
+        context['display_email'] = display_email
+        return context
+
 
 @login_required(login_url='/register/')
 @require_http_methods(['DELETE'])
