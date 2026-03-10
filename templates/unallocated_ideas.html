@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container py-4">
+  <section class="hero-card reveal" style="max-width: 980px; margin: 0 auto;">
+    <span class="badge">Admin Folder</span>
+    <h1 style="margin-top: 12px;">Unallocated Ideas</h1>
+    <p>Ideas in this folder are no longer linked to an account, usually because the original account was deleted.</p>
+
+    {% if ideas %}
+      <div class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead>
+            <tr>
+              <th scope="col">Title</th>
+              <th scope="col">Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Submitted</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for idea in ideas %}
+              <tr>
+                <td>{{ idea.title|default:"Untitled" }}</td>
+                <td>{{ idea.name }}</td>
+                <td>{{ idea.email }}</td>
+                <td>{{ idea.created_on|date:"M d, Y H:i" }}</td>
+                <td>
+                  {% if idea.reviewed %}
+                    <span class="badge bg-success">Reviewed</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Pending</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p>No unallocated ideas found.</p>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}

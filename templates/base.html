@@ -42,6 +42,9 @@
                 <a class="nav-link" href="{% url 'ideas_page' %}">Share Ideas</a>
                 {% if user.is_authenticated %}
                     <a class="nav-link" href="{% url 'my_ideas_page' %}">My Ideas</a>
+                    {% if user.is_staff %}
+                        <a class="nav-link" href="{% url 'unallocated_ideas_page' %}">Unallocated Ideas</a>
+                    {% endif %}
                     <a class="nav-link" href="{% url 'settings_page' %}">Manage Account</a>
                     <a class="nav-link" href="#" id="logoutLink" style="cursor: pointer;">Logout</a>
                 {% else %}

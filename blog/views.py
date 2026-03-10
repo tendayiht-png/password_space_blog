@@ -145,6 +145,17 @@ def my_ideas_page(request):
 
 
 @login_required(login_url='/login/')
+def unallocated_ideas_page(request):
+    """Admin-only folder for ideas that no longer have an account owner."""
+    if not request.user.is_staff:
+        messages.error(request, 'Only admin users can access the Unallocated Ideas folder.')
+        return redirect('home')
+
+    ideas = Idea.objects.filter(owner__isnull=True).order_by('-created_on')
+    return render(request, 'unallocated_ideas.html', {'ideas': ideas})
+
+
+@login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def edit_idea_page(request, idea_id):
     idea_obj = get_object_or_404(Idea, pk=idea_id, owner=request.user)
@@ -266,6 +277,18 @@ def _send_idea_confirmation_email(idea_obj):
         from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@passwordspaceblog.com'),
         recipient_list=[idea_obj.email],
         fail_silently=True,
+    )
+
+
+def _move_user_ideas_to_unallocated(user):
+    """Keep idea records after account deletion while removing account ownership."""
+    if not user:
+        return 0
+
+    return Idea.objects.filter(owner=user).update(
+        owner=None,
+        name='Deleted User',
+        email=f'deleted-user-{user.id}@passwordspaceblog.invalid',
     )
 
 
@@ -439,7 +462,10 @@ class SettingsPageView(LoginRequiredMixin, TemplateView):
 def delete_account_api(request):
     """
     DELETE /API/delete-account permanently deletes the user account
-    and all associated data after password verification.
+    after password verification.
+
+    Ideas submitted by the user are retained anonymously and moved into
+    the Unallocated Ideas folder for admin review.
     """
     try:
         payload = _parse_request_payload(request)
@@ -463,11 +489,11 @@ def delete_account_api(request):
         username = user.username
         email = user.email or ''
         user_id = user.id
+        moved_ideas = 0
 
-        # Perform cascading delete in a transaction
+        # Perform account cleanup in a transaction
         with transaction.atomic():
-            # Django's ORM handles cascading deletes automatically
-            # This will delete all related objects (blog_posts, comments, etc.)
+            moved_ideas = _move_user_ideas_to_unallocated(user)
             user.delete()
 
         # Log out the user
@@ -475,13 +501,18 @@ def delete_account_api(request):
 
         # Send farewell email if email is set
         if email:
-            _send_account_deletion_email(username, email)
+            _send_account_deletion_email(username, email, moved_ideas)
+
+        success_message = 'Your account has been permanently deleted. We\'re sorry to see you go.'
+        if moved_ideas:
+            success_message += ' Your submitted ideas were kept anonymously in the Unallocated Ideas folder.'
 
         return JsonResponse(
             {
                 'ok': True,
-                'message': 'Your account has been permanently deleted. We\'re sorry to see you go.',
+                'message': success_message,
                 'user_id': user_id,
+                'unallocated_ideas_count': moved_ideas,
             },
             status=200,
         )
@@ -493,10 +524,17 @@ def delete_account_api(request):
         )
 
 
-def _send_account_deletion_email(username, email):
+def _send_account_deletion_email(username, email, moved_ideas=0):
     """Send a farewell email after account deletion."""
     try:
         subject = 'Your Password Space Blog Account Has Been Deleted'
+        ideas_message = ''
+        if moved_ideas:
+            ideas_message = (
+                f"\nYour {moved_ideas} submitted idea(s) were retained without account ownership "
+                "for editorial review in our unallocated folder."
+            )
+
         message = f"""
 Hello {username},
 
@@ -504,10 +542,11 @@ This email confirms that your Password Space Blog account has been permanently d
 
 All your data, including:
 - Your user profile
-- Blog posts and comments
+- Account access and credentials
 - Account activity history
 
 ...has been removed from our servers.
+{ideas_message}
 
 If you deleted your account by mistake or have any concerns, please contact our support team as soon as possible.
 
