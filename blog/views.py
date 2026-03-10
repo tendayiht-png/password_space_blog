@@ -70,11 +70,38 @@ class RegisterPageView(TemplateView):
     template_name = 'register.html'
 
 
+def _account_contact_email(user):
+    """Return best available account email identity for ownership linking."""
+    if not user or not user.is_authenticated:
+        return ''
+
+    account_email = (user.email or '').strip()
+    if account_email:
+        return account_email
+
+    username = (user.username or '').strip()
+    if '@' in username:
+        return username
+
+    return ''
+
+
+def _claim_unowned_ideas_for_user(user):
+    """Attach previously anonymous ideas to the authenticated account when possible."""
+    contact_email = _account_contact_email(user)
+    if not contact_email:
+        return 0
+
+    return Idea.objects.filter(owner__isnull=True, email__iexact=contact_email).update(owner=user)
+
+
 @login_required(login_url='/login/')
 def my_ideas_page(request):
     from datetime import datetime, timedelta
     from django.db.models import Q
-    
+
+    _claim_unowned_ideas_for_user(request.user)
+
     ideas = Idea.objects.filter(owner=request.user).order_by('-created_on')
     
     # Get filter parameters
@@ -761,6 +788,8 @@ def login_api(request):
         # Log in the user (creates session)
         login(request, user)
 
+        claimed_ideas = _claim_unowned_ideas_for_user(user)
+
         # Generate JWT tokens
         refresh_obj = RefreshToken.for_user(user)
         if remember_me:
@@ -782,6 +811,7 @@ def login_api(request):
                 'username': user.username,
                 'email': user.email,
             },
+            'claimed_ideas': claimed_ideas,
             'redirect': '/ideas/my/',
         }
 
