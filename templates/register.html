@@ -57,6 +57,15 @@
           required
         />
         <p id="confirm-password-error" class="field-error" aria-live="polite"></p>
+
+        <div id="mismatch-banner" style="display:none; margin-top: 8px; padding: 10px 14px; background: #fff5f5; border: 1px solid #fecaca; border-radius: 8px; align-items: center; justify-content: space-between; gap: 12px;">
+          <span style="color: #b91c1c; font-size: 0.875rem; font-weight: 600;">&#9888; Passwords do not match.</span>
+          <button
+            type="button"
+            id="reset-passwords-btn"
+            style="background: #b91c1c; color: #fff; border: none; border-radius: 8px; padding: 6px 14px; font-size: 0.85rem; font-weight: 700; cursor: pointer; white-space: nowrap;"
+          >Reset Password Fields</button>
+        </div>
       </div>
 
       <div class="hero-actions">
@@ -154,6 +163,36 @@
     }
 
     passwordInput.addEventListener("input", updateStrength);
+
+    // Real-time mismatch detection
+    const mismatchBanner = document.getElementById("mismatch-banner");
+    const resetBtn = document.getElementById("reset-passwords-btn");
+
+    function checkMismatch() {
+      const pw = passwordInput.value;
+      const cpw = confirmInput.value;
+      if (cpw.length > 0 && pw !== cpw) {
+        mismatchBanner.style.display = "flex";
+        confirmError.textContent = "";
+      } else {
+        mismatchBanner.style.display = "none";
+      }
+    }
+
+    passwordInput.addEventListener("input", checkMismatch);
+    confirmInput.addEventListener("input", checkMismatch);
+
+    resetBtn.addEventListener("click", function () {
+      passwordInput.value = "";
+      confirmInput.value = "";
+      passwordError.textContent = "";
+      confirmError.textContent = "";
+      mismatchBanner.style.display = "none";
+      strengthFill.style.width = "0%";
+      strengthFill.style.background = "#d7ccb9";
+      strengthText.textContent = "Start typing to see password strength.";
+      passwordInput.focus();
+    });
 
     form.addEventListener("submit", async function (event) {
       event.preventDefault();
