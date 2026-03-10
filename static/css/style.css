@@ -225,7 +225,7 @@ h6 {
 
 h1,
 h2 {
-  font-family: "Sora", "Trebuchet MS", sans-serif;
+  font-family: "Sora", "Open Sans", sans-serif;
 }
 
 h1 {
@@ -568,7 +568,7 @@ table tbody tr:hover {
 .footer-legal p {
   margin: 0;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.72);
+  color: #374151;
 }
 
 .footer-disclaimer {

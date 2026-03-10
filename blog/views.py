@@ -771,7 +771,7 @@ def login_api(request):
                 'username': user.username,
                 'email': user.email,
             },
-            'redirect': '/settings/',
+            'redirect': '/ideas/my/',
         }
 
         response = JsonResponse(response_data, status=200)
