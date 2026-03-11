@@ -44,4 +44,18 @@ document.addEventListener('DOMContentLoaded', function() {
             link.classList.add('active');
         }
     });
+
+    // Show floating Back to Home arrow only after scrolling on non-home pages.
+    const backHomeArrow = document.getElementById('backHomeArrow');
+    if (backHomeArrow) {
+        const isHomePage = window.location.pathname === '/';
+
+        const toggleBackHomeArrow = function() {
+            const shouldShow = !isHomePage && window.scrollY > 180;
+            backHomeArrow.classList.toggle('visible', shouldShow);
+        };
+
+        toggleBackHomeArrow();
+        window.addEventListener('scroll', toggleBackHomeArrow, { passive: true });
+    }
 });
