@@ -76,12 +76,14 @@
 
     <a
         href="{% url 'home' %}"
+        data-home-url="{% url 'home' %}"
         id="backHomeArrow"
         class="back-home-arrow"
         aria-label="Back to Home"
         title="Back to Home"
     >
-        <span aria-hidden="true">&uarr;</span>
+        <i id="backHomeArrowGlyph" class="fas fa-home" aria-hidden="true"></i>
+        <span id="backHomeArrowText" class="back-home-arrow-text">Home</span>
     </a>
 
     <!-- Footer -->

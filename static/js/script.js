@@ -49,10 +49,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const backHomeArrow = document.getElementById('backHomeArrow');
     if (backHomeArrow) {
         const isHomePage = window.location.pathname === '/';
+        const homeUrl = backHomeArrow.dataset.homeUrl || '/';
+        const backHomeArrowGlyph = document.getElementById('backHomeArrowGlyph');
+        const backHomeArrowText = document.getElementById('backHomeArrowText');
 
         if (isHomePage) {
+            backHomeArrow.setAttribute('href', '#');
             backHomeArrow.setAttribute('aria-label', 'Back to Top');
             backHomeArrow.setAttribute('title', 'Back to Top');
+            if (backHomeArrowGlyph) {
+                backHomeArrowGlyph.className = 'fas fa-arrow-up';
+            }
+            if (backHomeArrowText) {
+                backHomeArrowText.textContent = 'Top';
+            }
+        } else {
+            backHomeArrow.setAttribute('href', homeUrl);
+            backHomeArrow.setAttribute('aria-label', 'Back to Home');
+            backHomeArrow.setAttribute('title', 'Back to Home');
+            if (backHomeArrowGlyph) {
+                backHomeArrowGlyph.className = 'fas fa-home';
+            }
+            if (backHomeArrowText) {
+                backHomeArrowText.textContent = 'Home';
+            }
         }
 
         const toggleBackHomeArrow = function() {
