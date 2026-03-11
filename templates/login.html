@@ -16,9 +16,10 @@
       </div>
     </article>
   </main>
-  <br>
+  
     <main class="container" style="max-width: 600px; margin-top: 2rem;">
-    <section style="margin-top: 2rem;">
+      <article class="hero-card"></article>
+      <section style="margin-top: 2rem;">
       <form id="loginForm" class="auth-form">
         {% csrf_token %}
         
@@ -116,6 +117,7 @@
         <div id="formResult" class="form-result" style="display: none;"></div>
       </form>
     </section>
+      </article>
   </main>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
