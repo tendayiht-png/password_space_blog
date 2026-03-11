@@ -694,10 +694,10 @@ a:hover {
   position: fixed;
   right: 18px;
   bottom: 22px;
-  min-width: 88px;
+  width: 46px;
   height: 46px;
-  padding: 0 12px;
-  gap: 8px;
+  padding: 0;
+  gap: 0;
   border-radius: 999px;
   border: 1px solid #0e9589;
   background: linear-gradient(135deg, var(--brand), #0e9589);
@@ -705,6 +705,7 @@ a:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   font-size: 1rem;
   font-weight: 800;
   box-shadow: 0 10px 18px rgba(15, 118, 110, 0.32);
@@ -713,7 +714,8 @@ a:hover {
   visibility: hidden;
   pointer-events: none;
   transform: translateY(8px) scale(0.96);
-  transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+  transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease,
+    width 220ms ease, padding 220ms ease, gap 220ms ease;
   z-index: 30;
 }
 
@@ -731,6 +733,15 @@ a:hover {
   filter: brightness(1.06);
   transform: translateY(-2px);
   outline: none;
+  width: 96px;
+  padding: 0 14px 0 10px;
+  gap: 8px;
+}
+
+.back-home-arrow:hover .back-home-arrow-text,
+.back-home-arrow:focus-visible .back-home-arrow-text {
+  max-width: 60px;
+  opacity: 1;
 }
 
 .back-home-arrow-text {
@@ -738,6 +749,11 @@ a:hover {
   letter-spacing: 0.02em;
   font-weight: 800;
   line-height: 1;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 220ms ease, opacity 180ms ease 60ms;
 }
 
 @media (max-width: 900px) {
@@ -815,10 +831,15 @@ a:hover {
   .back-home-arrow {
     right: 12px;
     bottom: 14px;
-    min-width: 78px;
+    width: 42px;
     height: 42px;
-    font-size: 0.95rem;
-    padding: 0 10px;
+    font-size: 0.9rem;
+  }
+
+  .back-home-arrow:hover,
+  .back-home-arrow:focus-visible {
+    width: 88px;
+    padding: 0 12px 0 8px;
     gap: 6px;
   }
 }
