@@ -45,15 +45,32 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Show floating Back to Home arrow only after scrolling on non-home pages.
+    // Reuse the floating arrow as Back to Top on home and Back to Home elsewhere.
     const backHomeArrow = document.getElementById('backHomeArrow');
     if (backHomeArrow) {
         const isHomePage = window.location.pathname === '/';
 
+        if (isHomePage) {
+            backHomeArrow.setAttribute('aria-label', 'Back to Top');
+            backHomeArrow.setAttribute('title', 'Back to Top');
+        }
+
         const toggleBackHomeArrow = function() {
-            const shouldShow = !isHomePage && window.scrollY > 180;
+            const shouldShow = window.scrollY > 180;
             backHomeArrow.classList.toggle('visible', shouldShow);
         };
+
+        backHomeArrow.addEventListener('click', function(event) {
+            if (!isHomePage) {
+                return;
+            }
+
+            event.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
 
         toggleBackHomeArrow();
         window.addEventListener('scroll', toggleBackHomeArrow, { passive: true });
