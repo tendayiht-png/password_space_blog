@@ -23,7 +23,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.generic import DetailView, ListView, TemplateView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Idea, Post
+from .models import Idea, Post, UserContactProfile
 
 
 class PostList(ListView):
@@ -377,13 +377,54 @@ def _parse_request_payload(request):
     return request.POST.dict()
 
 
-def _registration_errors(username, password, confirm_password):
+def _normalized_email(value):
+    return (value or '').strip().lower()
+
+
+def _normalize_telephone(value):
+    raw = (value or '').strip()
+    if not raw:
+        return ''
+
+    digits = ''.join(ch for ch in raw if ch.isdigit())
+    if not digits:
+        return ''
+
+    return f'+{digits}' if raw.startswith('+') else digits
+
+
+def _looks_like_valid_telephone(value):
+    normalized = _normalize_telephone(value)
+    if not normalized:
+        return False
+
+    digit_count = len(normalized.lstrip('+'))
+    return 7 <= digit_count <= 15
+
+
+def _registration_errors(username, email, telephone, password, confirm_password):
     errors = {}
 
     if not username:
         errors['username'] = ['Username is required.']
     elif User.objects.filter(username__iexact=username).exists():
         errors['username'] = ['This username is already taken.']
+
+    if not email:
+        errors['email'] = ['Email is required.']
+    else:
+        try:
+            validate_email(email)
+        except ValidationError:
+            errors['email'] = ['Please enter a valid email address.']
+        else:
+            if User.objects.filter(email__iexact=email).exists():
+                errors['email'] = ['This email is already registered.']
+
+    if not telephone:
+        errors['telephone'] = ['Telephone is required.']
+    elif not _looks_like_valid_telephone(telephone):
+        errors['telephone'] = ['Please enter a valid telephone number (7 to 15 digits).']
 
     if not password:
         errors['password'] = ['Password is required.']
@@ -396,7 +437,7 @@ def _registration_errors(username, password, confirm_password):
 
     if password:
         try:
-            validate_password(password, user=User(username=username))
+            validate_password(password, user=User(username=username, email=email))
         except ValidationError as exc:
             errors['password'] = list(exc.messages)
 
@@ -406,35 +447,64 @@ def _registration_errors(username, password, confirm_password):
 @require_http_methods(['GET', 'POST'])
 def register_api(request):
     """
-    GET /API/register?username=<name> checks username availability.
+    GET /API/register?username=<name> or ?email=<email> checks availability.
     POST /API/register creates a new user with hashed password.
     """
     if request.method == 'GET':
         username = request.GET.get('username', '').strip()
-        if not username:
-            return JsonResponse(
-                {'available': False, 'message': 'Username is required.'},
-                status=400,
-            )
+        email = request.GET.get('email', '').strip()
 
-        exists = User.objects.filter(username__iexact=username).exists()
-        return JsonResponse({'available': not exists, 'exists': exists})
+        if username:
+            exists = User.objects.filter(username__iexact=username).exists()
+            return JsonResponse({'available': not exists, 'exists': exists, 'field': 'username'})
+
+        if email:
+            try:
+                validate_email(email)
+            except ValidationError:
+                return JsonResponse(
+                    {'available': False, 'message': 'Please enter a valid email address.'},
+                    status=400,
+                )
+
+            exists = User.objects.filter(email__iexact=email).exists()
+            return JsonResponse({'available': not exists, 'exists': exists, 'field': 'email'})
+
+        return JsonResponse(
+            {'available': False, 'message': 'Username or email is required.'},
+            status=400,
+        )
 
     payload = _parse_request_payload(request)
     username = payload.get('username', '').strip()
+    email = payload.get('email', '').strip()
+    telephone = payload.get('telephone', '').strip()
     password = payload.get('password', '')
     confirm_password = payload.get('confirm_password', '')
 
-    errors = _registration_errors(username, password, confirm_password)
+    errors = _registration_errors(username, email, telephone, password, confirm_password)
     if errors:
         return JsonResponse({'ok': False, 'errors': errors}, status=400)
 
-    user = User.objects.create_user(username=username, password=password)
+    user = User.objects.create_user(
+        username=username,
+        email=email,
+        password=password,
+    )
+    UserContactProfile.objects.update_or_create(
+        user=user,
+        defaults={'telephone': _normalize_telephone(telephone)},
+    )
+
     return JsonResponse(
         {
             'ok': True,
             'message': 'Registration successful.',
-            'user': {'id': user.id, 'username': user.username},
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+            },
         },
         status=201,
     )
@@ -807,33 +877,72 @@ def login_api(request):
     try:
         payload = _parse_request_payload(request)
         username = payload.get('username', '').strip()
+        email = payload.get('email', '').strip()
+        telephone = payload.get('telephone', '').strip()
         password = payload.get('password', '')
         remember_me = payload.get('remember_me', False)
 
         if isinstance(remember_me, str):
             remember_me = remember_me.strip().lower() in {'1', 'true', 'yes', 'on'}
 
-        if not username or not password:
+        if not username or not email or not telephone or not password:
             return JsonResponse(
-                {'ok': False, 'message': 'Username and password are required.'},
+                {'ok': False, 'message': 'Username, email, telephone, and password are required.'},
                 status=400,
             )
 
-        # Authenticate user
-        user = authenticate(request, username=username, password=password)
+        if not _looks_like_valid_telephone(telephone):
+            return JsonResponse(
+                {
+                    'ok': False,
+                    'message': 'Please enter a valid telephone number (7 to 15 digits).',
+                },
+                status=400,
+            )
+
+        # Validate account identity before password check.
+        user = User.objects.filter(username__iexact=username).first()
         if user is None:
             return JsonResponse(
-                {'ok': False, 'message': 'Invalid username or password.'},
+                {'ok': False, 'message': 'Invalid username, email, telephone, or password.'},
+                status=401,
+            )
+
+        if _normalized_email(_account_contact_email(user)) != _normalized_email(email):
+            return JsonResponse(
+                {'ok': False, 'message': 'Invalid username, email, telephone, or password.'},
+                status=401,
+            )
+
+        normalized_telephone = _normalize_telephone(telephone)
+        profile, _ = UserContactProfile.objects.get_or_create(user=user)
+        stored_telephone = _normalize_telephone(profile.telephone)
+
+        if stored_telephone and stored_telephone != normalized_telephone:
+            return JsonResponse(
+                {'ok': False, 'message': 'Invalid username, email, telephone, or password.'},
+                status=401,
+            )
+
+        if not stored_telephone:
+            profile.telephone = normalized_telephone
+            profile.save(update_fields=['telephone'])
+
+        # Authenticate user
+        authenticated_user = authenticate(request, username=user.username, password=password)
+        if authenticated_user is None:
+            return JsonResponse(
+                {'ok': False, 'message': 'Invalid username, email, telephone, or password.'},
                 status=401,
             )
 
         # Log in the user (creates session)
-        login(request, user)
+        login(request, authenticated_user)
 
-        claimed_ideas = _claim_unowned_ideas_for_user(user)
+        claimed_ideas = _claim_unowned_ideas_for_user(authenticated_user)
 
         # Generate JWT tokens
-        refresh_obj = RefreshToken.for_user(user)
+        refresh_obj = RefreshToken.for_user(authenticated_user)
         if remember_me:
             refresh_obj.set_exp(lifetime=timedelta(days=30))
 
@@ -849,9 +958,9 @@ def login_api(request):
             'ok': True,
             'message': 'Login successful.',
             'user': {
-                'id': user.id,
-                'username': user.username,
-                'email': user.email,
+                'id': authenticated_user.id,
+                'username': authenticated_user.username,
+                'email': authenticated_user.email,
             },
             'claimed_ideas': claimed_ideas,
             'redirect': '/ideas/my/',

@@ -60,3 +60,17 @@ class Idea(models.Model):
 
     def __str__(self):
         return f"Idea from {self.name}: {self.title or 'Untitled'}"
+
+
+class UserContactProfile(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="contact_profile",
+    )
+    telephone = models.CharField(max_length=24, blank=True, default="")
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Contact profile for {self.user.username}"

@@ -7,10 +7,12 @@
       <span class="badge">Account Setup</span>
       <h1>Create your account securely</h1>
       <p>
-        Pick a unique email and a strong password so you do not miss out on our next article. Sign up and share your ideas with our community while benefiting from our password strength guidance and rejecting weak credentials server-side.
+        Pick a unique username, email, and telephone number with a strong password so you do not miss out on our next article. Sign up and share your ideas with our community while benefiting from our password strength guidance and strict identity matching server-side.
       </p>
       <div class="pill-row">
+        <span class="pill">Unique Username</span>
         <span class="pill">Unique Email</span>
+        <span class="pill">Verified Telephone</span>
         <span class="pill">Strong Password</span>
         <span class="pill">Hashed with Argon2</span>
       </div>
@@ -19,7 +21,9 @@
     <aside class="info-card reveal">
       <h2>Keep Your Account Secure</h2>
       <ul class="info-list">
+        <li>Username must be unique.</li>
         <li>Email must not already exist.</li>
+        <li>Telephone number is required for account verification.</li>
         <li>Password must satisfy strength and complexity checks.</li>
         <li>Passwords are never stored as plain text.</li>
       </ul>
@@ -31,10 +35,23 @@
       {% csrf_token %}
 
       <div class="field">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" autocomplete="username" required />
+        <p id="username-help" class="field-help" aria-live="polite"></p>
+        <p id="username-error" class="field-error" aria-live="polite"></p>
+      </div>
+
+      <div class="field">
         <label for="email">Email</label>
         <input id="email" name="email" type="email" autocomplete="username" required />
         <p id="email-help" class="field-help" aria-live="polite"></p>
         <p id="email-error" class="field-error" aria-live="polite"></p>
+      </div>
+
+      <div class="field">
+        <label for="telephone">Telephone</label>
+        <input id="telephone" name="telephone" type="tel" autocomplete="tel" required />
+        <p id="telephone-error" class="field-error" aria-live="polite"></p>
       </div>
 
       <div class="field">
@@ -82,12 +99,17 @@
 <script>
   (function () {
     const form = document.getElementById("register-form");
+    const usernameInput = document.getElementById("username");
     const emailInput = document.getElementById("email");
+    const telephoneInput = document.getElementById("telephone");
     const passwordInput = document.getElementById("password");
     const confirmInput = document.getElementById("confirm-password");
 
+    const usernameHelp = document.getElementById("username-help");
+    const usernameError = document.getElementById("username-error");
     const emailHelp = document.getElementById("email-help");
     const emailError = document.getElementById("email-error");
+    const telephoneError = document.getElementById("telephone-error");
     const passwordError = document.getElementById("password-error");
     const confirmError = document.getElementById("confirm-password-error");
     const resultMessage = document.getElementById("form-result");
@@ -101,7 +123,9 @@
     const colors = ["#b91c1c", "#ea580c", "#d97706", "#0f766e", "#0a5c56"];
 
     function resetErrors() {
+      usernameError.textContent = "";
       emailError.textContent = "";
+      telephoneError.textContent = "";
       passwordError.textContent = "";
       confirmError.textContent = "";
       resultMessage.textContent = "";
@@ -129,38 +153,54 @@
       return score;
     }
 
-    let emailCheckTimer = null;
-    emailInput.addEventListener("input", function () {
-      emailHelp.textContent = "";
-      emailError.textContent = "";
-      if (emailCheckTimer) {
-        clearTimeout(emailCheckTimer);
-      }
-      emailCheckTimer = setTimeout(checkEmailAvailability, 250);
-    });
+    let availabilityCheckTimer = null;
 
-    async function checkEmailAvailability() {
-      const email = emailInput.value.trim();
-      if (!email) {
-        emailHelp.textContent = "";
+    function queueAvailabilityCheck(field, value, helpTarget) {
+      if (availabilityCheckTimer) {
+        clearTimeout(availabilityCheckTimer);
+      }
+      availabilityCheckTimer = setTimeout(function () {
+        checkAvailability(field, value, helpTarget);
+      }, 250);
+    }
+
+    async function checkAvailability(field, value, helpTarget) {
+      if (!value) {
+        helpTarget.textContent = "";
         return;
       }
 
       try {
-        const response = await fetch("/API/register?email=" + encodeURIComponent(email));
+        const response = await fetch("/API/register?" + field + "=" + encodeURIComponent(value));
         const data = await response.json();
 
         if (response.ok && data.available) {
-          emailHelp.textContent = "Email is available.";
+          helpTarget.textContent = field === "username" ? "Username is available." : "Email is available.";
         } else if (response.ok && data.exists) {
-          emailHelp.textContent = "Email is already taken.";
+          helpTarget.textContent = field === "username" ? "Username is already taken." : "Email is already taken.";
         } else {
-          emailHelp.textContent = data.message || "Unable to validate email right now.";
+          helpTarget.textContent = data.message || "Unable to validate right now.";
         }
       } catch (error) {
-        emailHelp.textContent = "Unable to validate email right now.";
+        helpTarget.textContent = "Unable to validate right now.";
       }
     }
+
+    usernameInput.addEventListener("input", function () {
+      usernameHelp.textContent = "";
+      usernameError.textContent = "";
+      queueAvailabilityCheck("username", usernameInput.value.trim(), usernameHelp);
+    });
+
+    emailInput.addEventListener("input", function () {
+      emailHelp.textContent = "";
+      emailError.textContent = "";
+      queueAvailabilityCheck("email", emailInput.value.trim(), emailHelp);
+    });
+
+    telephoneInput.addEventListener("input", function () {
+      telephoneError.textContent = "";
+    });
 
     passwordInput.addEventListener("input", updateStrength);
 
@@ -205,7 +245,9 @@
       }
 
       const payload = {
+        username: usernameInput.value.trim(),
         email: emailInput.value.trim(),
+        telephone: telephoneInput.value.trim(),
         password: passwordInput.value,
         confirm_password: confirmInput.value,
       };
@@ -232,8 +274,14 @@
         }
 
         const errors = data.errors || {};
+        if (errors.username) {
+          usernameError.textContent = errors.username.join(" ");
+        }
         if (errors.email) {
           emailError.textContent = errors.email.join(" ");
+        }
+        if (errors.telephone) {
+          telephoneError.textContent = errors.telephone.join(" ");
         }
         if (errors.password) {
           passwordError.textContent = errors.password.join(" ");
@@ -242,7 +290,7 @@
           confirmError.textContent = errors.confirm_password.join(" ");
         }
 
-        if (!errors.email && !errors.password && !errors.confirm_password) {
+        if (!errors.username && !errors.email && !errors.telephone && !errors.password && !errors.confirm_password) {
           resultMessage.textContent = data.message || "Registration failed.";
           resultMessage.className = "form-result error";
         }
