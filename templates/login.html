@@ -3,8 +3,7 @@
 
 {% block content %}
 <main class="container" style="max-width: 600px; margin-top: 2rem;">
-  <div class="form-shell">
-    <article class="hero-card">
+      <article class="hero-card">
       <span class="badge">Account Access</span>
       <h1>Welcome Back</h1>
       <p>
@@ -16,7 +15,9 @@
         <span class="pill">Stay Logged In</span>
       </div>
     </article>
-
+  </main>
+  <br>
+    
     <section style="margin-top: 2rem;">
       <form id="loginForm" class="auth-form">
         {% csrf_token %}
@@ -115,8 +116,6 @@
         <div id="formResult" class="form-result" style="display: none;"></div>
       </form>
     </section>
-  </div>
-</main>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
