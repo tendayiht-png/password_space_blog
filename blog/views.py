@@ -46,6 +46,10 @@ class PostDetail(DetailView):
     slug_url_kwarg = 'slug'
 
 
+class AboutPageView(TemplateView):
+    template_name = 'about.html'
+
+
 class HowToPageView(TemplateView):
     template_name = 'how_to_page.html'
 

@@ -10,6 +10,7 @@ urlpatterns = [
     path('ideas/unallocated/', views.unallocated_ideas_page, name='unallocated_ideas_page'),
     path('ideas/<int:idea_id>/edit/', views.edit_idea_page, name='edit_idea_page'),
     path('ideas/<int:idea_id>/delete/', views.delete_idea, name='delete_idea'),
+    path('about/', views.AboutPageView.as_view(), name='about_page'),
     path('how-to-2fa/', views.HowToPageView.as_view(), name='how_to_page'),
     path('breach-checklist/', views.ChecklistPageView.as_view(), name='checklist_page'),
     path('login/', views.LoginPageView.as_view(), name='login_page'),

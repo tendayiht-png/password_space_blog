@@ -37,6 +37,7 @@
             </a>
             <div class="top-nav">
                 <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Home</a>
+                <a class="nav-link {% if request.path == '/about/' %}active{% endif %}" href="{% url 'about_page' %}">About</a>
                 <a class="nav-link" href="{% url 'how_to_page' %}">How-To 2FA</a>
                 <a class="nav-link" href="{% url 'checklist_page' %}">Breach Checklist</a>
                 <a class="nav-link" href="{% url 'ideas_page' %}">Share Ideas</a>

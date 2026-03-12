@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container">
+  <section class="layout">
+    <article class="article reveal">
+
+      <span class="badge">Personal Cybersecurity</span>
+      <h1>Password Safe Blog</h1>
+      <p>
+        Practical security guidance for everyday users, with clear steps you can apply right away.
+      </p>
+
+      <ul class="info-list" style="margin-top: 20px;">
+        <li><strong>Core Mission:</strong> Simple and practical advice for complex digital threats.</li>
+        <li><strong>Guides:</strong> Password manager adoption, 2FA setup, and real-world examples.</li>
+        <li><strong>Interactive Focus:</strong> Practical Q&amp;A and community-driven content ideas.</li>
+      </ul>
+
+      <div class="pill-row" style="margin-top: 24px;">
+        <span class="pill">Long &gt; Complex</span>
+        <span class="pill">Unique &gt; Same</span>
+        <span class="pill">Managed &gt; Handwritten</span>
+      </div>
+
+      <div class="hero-actions" style="margin-top: 28px; padding-top: 28px; border-top: 1px solid var(--line);">
+        <a class="btn btn-primary" href="{% url 'home' %}">Explore Articles</a>
+        <a class="btn btn-secondary" href="{% url 'ideas_page' %}">Share an Idea</a>
+      </div>
+
+    </article>
+
+    <aside class="sidebar reveal">
+      <h3>Quick Links</h3>
+      <a href="{% url 'how_to_page' %}">How-To 2FA Guide</a>
+      <a href="{% url 'checklist_page' %}">Breach Checklist</a>
+      <a href="{% url 'ideas_page' %}">Community Ideas</a>
+      <hr />
+      <h3>Our Focus</h3>
+      <p style="font-size: 0.85rem; color: var(--muted);">
+        We believe strong security doesn't have to be complicated. Every guide here is written for real people, not IT professionals.
+      </p>
+    </aside>
+  </section>
+</main>
+{% endblock %}
