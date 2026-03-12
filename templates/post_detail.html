@@ -1,33 +1,246 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<main class="container">
-  <section class="layout">
+<main class="container py-5">
+  <!-- Hero Section with Featured Image -->
+  <section class="blog-hero mb-5 reveal" style="background: linear-gradient(135deg, var(--brand-soft), #e8f3f1); border-radius: var(--radius); overflow: hidden; min-height: 400px; display: flex; align-items: center; padding: 60px 40px;">
+    <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+      <span class="badge" style="background: var(--brand); color: white;">Article</span>
+      <h1 style="font-size: 2.5rem; font-weight: 700; margin: 20px 0; line-height: 1.2; color: var(--ink);">{{ post.title }}</h1>
+      <p style="font-size: 1.1rem; color: var(--muted); margin: 0;">Discover practical security tips and best practices</p>
+    </div>
+  </section>
+
+  <!-- Main Layout -->
+  <section class="layout" style="display: grid; grid-template-columns: 1fr 320px; gap: 40px; max-width: 1200px; margin: 0 auto;">
+    
+    <!-- Main Article -->
     <article class="article reveal">
-      <span class="badge">Article</span>
-      <h1>{{ post.title }}</h1>
-      <p class="text-muted">By {{ post.author }} • {{ post.created_on|date:"M d, Y" }}</p>
       
-      <div class="article-content">
+      <!-- Article Metadata -->
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 15px;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--brand-soft); display: flex; align-items: center; justify-content: center; color: var(--brand); font-weight: 700;">
+            {{ post.author.first_name|first|default:post.author.username|first }}
+          </div>
+          <div>
+            <p style="margin: 0; font-weight: 600; color: var(--ink);">{{ post.author.first_name|default:post.author.username }}</p>
+            <p style="margin: 0; font-size: 0.9rem; color: var(--muted);">{{ post.created_on|date:"M d, Y" }}</p>
+          </div>
+        </div>
+        
+        <!-- Social Share Buttons -->
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <span style="font-size: 0.9rem; color: var(--muted); font-weight: 600;">Share:</span>
+          <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" rel="noopener noreferrer" style="width: 36px; height: 36px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #1877f2; text-decoration: none; transition: all 0.3s ease;" class="share-btn">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ post.title }}" target="_blank" rel="noopener noreferrer" style="width: 36px; height: 36px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #1da1f2; text-decoration: none; transition: all 0.3s ease;" class="share-btn">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri }}" target="_blank" rel="noopener noreferrer" style="width: 36px; height: 36px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #0a66c2; text-decoration: none; transition: all 0.3s ease;" class="share-btn">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+          <a href="mailto:?subject={{ post.title }}&body={{ request.build_absolute_uri }}" style="width: 36px; height: 36px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: var(--brand); text-decoration: none; transition: all 0.3s ease;" class="share-btn">
+            <i class="fas fa-envelope"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Article Content -->
+      <div class="article-content" style="font-size: 1.05rem; line-height: 1.8; color: var(--ink);">
+        {% if post.excerpt %}
+          <p style="font-size: 1.2rem; font-weight: 500; color: var(--brand); margin-bottom: 25px; padding-left: 20px; border-left: 4px solid var(--brand);">
+            {{ post.excerpt }}
+          </p>
+        {% endif %}
         {{ post.content|safe }}
       </div>
 
-      <div class="hero-actions" style="margin-top: 28px; padding-top: 28px; border-top: 1px solid var(--line);">
-        <a class="btn btn-primary" href="{% url 'home' %}">← Back to All Articles</a>
-        <a class="btn btn-secondary" href="{% url 'home' %}">View More Posts</a>
+      <!-- Article Tags/Categories (Optional) -->
+      <div style="margin: 40px 0; padding: 20px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);">
+        <p style="margin: 0 0 12px 0; font-weight: 600; color: var(--muted); text-transform: uppercase; font-size: 0.8rem;">Topic:</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+          <span style="background: var(--brand-soft); color: var(--brand); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">Security Tips</span>
+          <span style="background: var(--brand-soft); color: var(--brand); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">Password Management</span>
+        </div>
       </div>
+
+      <!-- Navigation Links -->
+      <div style="display: flex; gap: 15px; margin-top: 40px;">
+        <a class="btn btn-primary" href="{% url 'home' %}" style="background: var(--brand); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: background 0.3s ease;">
+          <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>Back to All Articles
+        </a>
+      </div>
+
+      <!-- Author Bio Section -->
+      <div style="background: var(--panel); padding: 30px; border-radius: var(--radius); margin-top: 50px; border: 1px solid var(--line);">
+        <h3 style="margin-top: 0; color: var(--ink);">About the Author</h3>
+        <div style="display: flex; gap: 20px; align-items: flex-start;">
+          <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--brand), #0e9589); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 2rem; flex-shrink: 0;">
+            {{ post.author.first_name|first|default:post.author.username|first }}
+          </div>
+          <div>
+            <h4 style="margin: 0 0 8px 0; color: var(--ink);">{{ post.author.first_name|default:post.author.username }}</h4>
+            <p style="margin: 0; color: var(--muted); line-height: 1.6;">
+              Security enthusiast and digital safety advocate. Passionate about helping others protect their online accounts and personal information. Writing practical guides for better password management.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comments Section -->
+      <section style="margin-top: 60px;">
+        <h2 style="font-size: 1.8rem; color: var(--ink); margin-bottom: 30px;">Comments</h2>
+        
+        {% if post.comments.all %}
+          <div style="margin-bottom: 40px;">
+            {% for comment in post.comments.all %}
+              {% if comment.approved %}
+                <div style="background: var(--panel); padding: 25px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid var(--brand);">
+                  <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                    <div>
+                      <h4 style="margin: 0; color: var(--ink);">{{ comment.author.first_name|default:comment.author.username }}</h4>
+                      <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: var(--muted);">{{ comment.created_on|date:"M d, Y \a\t H:i" }}</p>
+                    </div>
+                  </div>
+                  <p style="margin: 0; color: var(--ink); line-height: 1.6;">{{ comment.body }}</p>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <p style="color: var(--muted); font-style: italic;">No comments yet. Be the first to share your thoughts!</p>
+        {% endif %}
+
+        <!-- Comment Form -->
+        {% if user.is_authenticated %}
+          <div style="background: var(--panel-strong); padding: 30px; border-radius: var(--radius); border: 1px solid var(--line); margin-top: 30px;">
+            <h3 style="margin-top: 0; color: var(--ink);">Leave a Comment</h3>
+            <form method="post" action="{% url 'post_detail' post.slug %}" novalidate>
+              {% csrf_token %}
+              <div class="mb-3">
+                <textarea
+                  name="comment"
+                  id="comment"
+                  rows="5"
+                  class="form-control"
+                  placeholder="Share your thoughts..."
+                  required
+                  style="padding: 12px; border: 1px solid var(--line); border-radius: 8px; font-family: inherit; font-size: 1rem; resize: vertical;"
+                ></textarea>
+              </div>
+              <button type="submit" class="btn" style="background: var(--brand); color: white; padding: 12px 32px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.3s ease;">
+                Post Comment
+              </button>
+            </form>
+          </div>
+        {% else %}
+          <div style="background: var(--brand-soft); padding: 25px; border-radius: var(--radius); border: 1px solid var(--brand); text-align: center;">
+            <p style="margin: 0; color: var(--brand);">
+              <a href="{% url 'login_page' %}" style="color: var(--brand); font-weight: 600; text-decoration: none;">Sign in</a> or <a href="{% url 'register_page' %}" style="color: var(--brand); font-weight: 600; text-decoration: none;">create an account</a> to leave a comment.
+            </p>
+          </div>
+        {% endif %}
+      </section>
+
     </article>
 
+    <!-- Sidebar -->
     <aside class="sidebar reveal">
-      <h3>On This Page</h3>
-      <a href="{% url 'home' %}">All Articles</a>
-      <hr />
-      <h3>About This Series</h3>
-      <p style="font-size: 0.85rem; color: var(--muted);">
-        Password Safe Blog brings practical security guidance to everyone, from first-time setup to advanced configurations.
-      </p>
+      
+      <!-- Search Box -->
+      <div style="background: var(--panel); padding: 20px; border-radius: var(--radius); margin-bottom: 30px; border: 1px solid var(--line);">
+        <h3 style="margin-top: 0; font-size: 1rem; color: var(--ink);">Search Articles</h3>
+        <form method="get" action="{% url 'home' %}" style="display: flex; gap: 8px;">
+          <input
+            type="text"
+            name="q"
+            placeholder="Search..."
+            style="flex: 1; padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: 0.95rem;"
+          >
+          <button type="submit" style="background: var(--brand); color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 600;">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+      </div>
+
+      <!-- Newsletter CTA -->
+      <div style="background: linear-gradient(135deg, var(--brand), #0e9589); color: white; padding: 25px; border-radius: var(--radius); margin-bottom: 30px; text-align: center;">
+        <h3 style="margin-top: 0; color: white; font-size: 1.1rem;">Newsletter</h3>
+        <p style="font-size: 0.9rem; margin: 10px 0; opacity: 0.95;">Get the latest security tips delivered to your inbox weekly.</p>
+        <form method="post" style="margin-top: 15px;">
+          <input
+            type="email"
+            name="newsletter_email"
+            placeholder="Your email"
+            style="width: 100%; padding: 10px 12px; border: none; border-radius: 6px; margin-bottom: 10px; font-size: 0.9rem;"
+            required
+          >
+          <button type="submit" style="width: 100%; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: background 0.3s ease;">
+            Subscribe
+          </button>
+        </form>
+      </div>
+
+      <!-- Related Articles -->
+      <div style="background: var(--panel); padding: 20px; border-radius: var(--radius); margin-bottom: 30px; border: 1px solid var(--line);">
+        <h3 style="margin-top: 0; font-size: 1rem; color: var(--ink);">Popular Articles</h3>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <li style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--line);">
+            <a href="{% url 'home' %}" style="color: var(--brand); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: color 0.3s ease;">
+              Getting Started with Password Managers
+            </a>
+            <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: var(--muted);">Essential guide</p>
+          </li>
+          <li style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--line);">
+            <a href="{% url 'how_to_page' %}" style="color: var(--brand); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: color 0.3s ease;">
+              How to Enable 2FA on Your Accounts
+            </a>
+            <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: var(--muted);">Security guide</p>
+          </li>
+          <li style="padding-bottom: 0;">
+            <a href="{% url 'checklist_page' %}" style="color: var(--brand); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: color 0.3s ease;">
+              Data Breach Checklist
+            </a>
+            <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: var(--muted);">Action steps</p>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Quick Links -->
+      <div style="background: var(--panel); padding: 20px; border-radius: var(--radius); border: 1px solid var(--line);">
+        <h3 style="margin-top: 0; font-size: 1rem; color: var(--ink);">Quick Links</h3>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <li style="margin-bottom: 12px;"><a href="{% url 'home' %}" style="color: var(--brand); text-decoration: none; font-size: 0.95rem; transition: color 0.3s ease;">All Articles</a></li>
+          <li style="margin-bottom: 12px;"><a href="{% url 'about_page' %}" style="color: var(--brand); text-decoration: none; font-size: 0.95rem; transition: color 0.3s ease;">About Us</a></li>
+          <li style="margin-bottom: 12px;"><a href="{% url 'ideas_page' %}" style="color: var(--brand); text-decoration: none; font-size: 0.95rem; transition: color 0.3s ease;">Share Ideas</a></li>
+          <li><a href="{% url 'checklist_page' %}" style="color: var(--brand); text-decoration: none; font-size: 0.95rem; transition: color 0.3s ease;">Breach Checklist</a></li>
+        </ul>
+      </div>
+
     </aside>
+
   </section>
 
 </main>
+
+<style>
+  .share-btn:hover {
+    background: var(--brand-soft) !important;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    .layout {
+      grid-template-columns: 1fr !important;
+    }
+
+    main > section:first-of-type {
+      padding: 40px 20px !important;
+    }
+  }
+</style>
+
 {% endblock %}
