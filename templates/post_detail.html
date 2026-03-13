@@ -4,7 +4,9 @@
 {% block content %}
 <main class="container py-4">
   <!-- Hero Section with Featured Image -->
-  <section class="blog-hero mb-5 reveal" style="background: linear-gradient(135deg, var(--brand-soft), #e8f3f1); border-radius: var(--radius); overflow: hidden; min-height: 400px; display: flex; align-items: center; padding: 60px 40px; layout;">
+  <img src="{% static 'images/blog_image_4.jpg' %}" alt="Password Safe Blog Image" style="display: block; width: 100%; margin-bottom: 24px;">
+  <section class="layout">
+    <article class="hero-card">
      <article class="hero-card">
       <span class="badge" style="background: var(--brand); color: white;">Article</span>
       <h1 style="font-size: 2.5rem; font-weight: 700; margin: 20px 0; line-height: 1.2; color: var(--ink);">{{ post.title }}</h1>
