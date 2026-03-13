@@ -66,10 +66,6 @@ class HowToPageView(TemplateView):
         return context
 
 
-class ChecklistPageView(TemplateView):
-    template_name = 'checklist_page.html'
-
-
 class RegisterPageView(TemplateView):
     template_name = 'register.html'
 

@@ -12,7 +12,6 @@ urlpatterns = [
     path('ideas/<int:idea_id>/delete/', views.delete_idea, name='delete_idea'),
     path('about/', views.AboutPageView.as_view(), name='about_page'),
     path('how-to-2fa/', views.HowToPageView.as_view(), name='how_to_page'),
-    path('breach-checklist/', views.ChecklistPageView.as_view(), name='checklist_page'),
     path('login/', views.LoginPageView.as_view(), name='login_page'),
     path('register/', views.RegisterPageView.as_view(), name='register_page'),
     path('settings/', views.SettingsPageView.as_view(), name='settings_page'),
