@@ -33,9 +33,6 @@
         <!-- Social Share Buttons -->
         <div style="display: flex; gap: 12px; align-items: center;">
           <span style="font-size: 0.9rem; color: var(--muted); font-weight: 600;">Share:</span>
-          <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" rel="noopener noreferrer" style="width: 36px; height: 36px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #1877f2; text-decoration: none; transition: all 0.3s ease;" class="share-btn">
-            <i class="fab fa-facebook-f"></i>
-          </a>
           <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ post.title }}" target="_blank" rel="noopener noreferrer" style="width: 36px; height: 36px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #1da1f2; text-decoration: none; transition: all 0.3s ease;" class="share-btn">
             <i class="fab fa-twitter"></i>
           </a>
