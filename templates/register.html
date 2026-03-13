@@ -82,6 +82,7 @@
           <button
             type="button"
             id="reset-passwords-btn"
+            data-clear-passwords
             style="background: #b91c1c; color: #fff; border: none; border-radius: 8px; padding: 6px 14px; font-size: 0.85rem; font-weight: 700; cursor: pointer; white-space: nowrap;"
           >Reset Password Fields</button>
         </div>
@@ -89,7 +90,7 @@
 
       <div class="hero-actions">
         <button type="submit" class="btn btn-primary">Create Account</button>
-        <a href="{% url 'home' %}" class="btn btn-secondary">Reset Password</a>
+        <button type="button" class="btn btn-secondary" data-clear-passwords>Clear Passwords</button>
       </div>
 
       <p id="form-result" class="form-result" aria-live="polite"></p>
@@ -208,7 +209,22 @@
 
     // Real-time mismatch detection
     const mismatchBanner = document.getElementById("mismatch-banner");
-    const resetBtn = document.getElementById("reset-passwords-btn");
+    const resetButtons = document.querySelectorAll("[data-clear-passwords]");
+
+    function clearPasswordFields(shouldFocus = true) {
+      passwordInput.value = "";
+      confirmInput.value = "";
+      passwordError.textContent = "";
+      confirmError.textContent = "";
+      mismatchBanner.style.display = "none";
+      strengthFill.style.width = "0%";
+      strengthFill.style.background = "#d7ccb9";
+      strengthText.textContent = "Start typing to see password strength.";
+
+      if (shouldFocus) {
+        passwordInput.focus();
+      }
+    }
 
     function checkMismatch() {
       const pw = passwordInput.value;
@@ -224,16 +240,11 @@
     passwordInput.addEventListener("input", checkMismatch);
     confirmInput.addEventListener("input", checkMismatch);
 
-    resetBtn.addEventListener("click", function () {
-      passwordInput.value = "";
-      confirmInput.value = "";
-      passwordError.textContent = "";
-      confirmError.textContent = "";
-      mismatchBanner.style.display = "none";
-      strengthFill.style.width = "0%";
-      strengthFill.style.background = "#d7ccb9";
-      strengthText.textContent = "Start typing to see password strength.";
-      passwordInput.focus();
+    resetButtons.forEach(function (button) {
+      button.addEventListener("click", function (event) {
+        event.preventDefault();
+        clearPasswordFields();
+      });
     });
 
     form.addEventListener("submit", async function (event) {
@@ -270,8 +281,9 @@
           resultMessage.textContent = data.message;
           resultMessage.className = "form-result success";
           form.reset();
-          updateStrength();
+          clearPasswordFields(false);
           emailHelp.textContent = "";
+          usernameHelp.textContent = "";
           return;
         }
 
