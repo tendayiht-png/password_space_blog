@@ -19,7 +19,7 @@
       </div>
       <div class="hero-actions">
         <a class="btn btn-primary" href="#featured">Explore Articles</a>
-        <a class="btn btn-secondary" href="#about">Learn Our Approach</a>
+        <a class="btn btn-secondary" href="{% if post_list %}{% url 'post_detail' post_list.0.slug %}{% else %}#featured{% endif %}">Learn Our Approach</a>
       </div>
     </article>
 
