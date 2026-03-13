@@ -3,24 +3,18 @@
 
 {% block content %}
 <main class="container py-4">
-  <!-- Hero Section with Featured Image -->
   <img src="{% static 'images/blog_image_4.jpg' %}" alt="Password Safe Blog Image" style="display: block; width: 100%; margin-bottom: 24px;">
-  <section class="layout">
-    <article class="hero-card">
-     <article class="hero-card">
-      <span class="badge" style="background: var(--brand); color: white;">Article</span>
+
+  <section class="hero">
+    <article class="hero-card reveal" style="background: linear-gradient(135deg, var(--brand-soft), #e8f3f1);">
+      <span class="badge" style="background: var(--brand); color: #fff;">Article</span>
       <h1 style="font-size: 2.5rem; font-weight: 700; margin: 20px 0; line-height: 1.2; color: var(--ink);">{{ post.title }}</h1>
-      <p style="font-size: 1.1rem; color: var(--muted); margin: 0;">Discover practical security tips and best practices</p>
-    </div>
+      <p style="font-size: 1.1rem; color: var(--muted); margin: 0;">Discover practical security tips and best practices.</p>
+    </article>
   </section>
 
-  <!-- Main Layout -->
   <section class="layout" style="display: grid; grid-template-columns: 1fr 320px; gap: 40px; max-width: 1200px; margin: 0 auto;">
-    
-    <!-- Main Article -->
     <article class="article reveal">
-      
-      <!-- Article Metadata -->
       <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
         <div style="display: flex; align-items: center; gap: 15px;">
           <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--brand-soft); display: flex; align-items: center; justify-content: center; color: var(--brand); font-weight: 700;">
@@ -31,8 +25,7 @@
             <p style="margin: 0; font-size: 0.9rem; color: var(--muted);">{{ post.created_on|date:"M d, Y" }}</p>
           </div>
         </div>
-        
-        <!-- Social Share Buttons -->
+
         <div style="display: flex; gap: 12px; align-items: center;">
           <span style="font-size: 0.9rem; color: var(--muted); font-weight: 600;">Share:</span>
           <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ post.title }}" target="_blank" rel="noopener noreferrer" style="width: 36px; height: 36px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #1da1f2; text-decoration: none; transition: all 0.3s ease;" class="share-btn">
@@ -47,7 +40,6 @@
         </div>
       </div>
 
-      <!-- Article Content -->
       <div class="article-content" style="font-size: 1.05rem; line-height: 1.8; color: var(--ink);">
         {% if post.excerpt %}
           <p style="font-size: 1.2rem; font-weight: 500; color: var(--brand); margin-bottom: 25px; padding-left: 20px; border-left: 4px solid var(--brand);">
@@ -57,7 +49,6 @@
         {{ post.content|safe }}
       </div>
 
-      <!-- Article Tags/Categories (Optional) -->
       <div style="margin: 40px 0; padding: 20px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);">
         <p style="margin: 0 0 12px 0; font-weight: 600; color: var(--muted); text-transform: uppercase; font-size: 0.8rem;">Topic:</p>
         <div style="display: flex; flex-wrap: wrap; gap: 10px;">
@@ -66,21 +57,15 @@
         </div>
       </div>
 
-      <!-- Navigation Links -->
       <div style="display: flex; gap: 15px; margin-top: 40px;">
         <a class="btn btn-primary" href="{% url 'home' %}" style="background: var(--brand); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: background 0.3s ease;">
           <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>Back to All Articles
         </a>
       </div>
 
-         </div>
-        </div>
-      </div>
-
-      <!-- Comments Section -->
       <section style="margin-top: 60px;">
         <h2 style="font-size: 1.8rem; color: var(--ink); margin-bottom: 30px;">Comments</h2>
-        
+
         {% if post.comments.all %}
           <div style="margin-bottom: 40px;">
             {% for comment in post.comments.all %}
@@ -131,13 +116,9 @@
           </div>
         {% endif %}
       </section>
-
     </article>
 
-    <!-- Sidebar -->
     <aside class="sidebar reveal">
-      
-      <!-- Search Box -->
       <div style="background: var(--panel); padding: 20px; border-radius: var(--radius); margin-bottom: 30px; border: 1px solid var(--line);">
         <h3 style="margin-top: 0; font-size: 1rem; color: var(--ink);">Search Articles</h3>
         <form method="get" action="{% url 'home' %}" style="display: flex; gap: 8px;">
@@ -153,7 +134,6 @@
         </form>
       </div>
 
-      <!-- Newsletter CTA -->
       <div style="background: linear-gradient(135deg, var(--brand), #0e9589); color: white; padding: 25px; border-radius: var(--radius); margin-bottom: 30px; text-align: center;">
         <h3 style="margin-top: 0; color: white; font-size: 1.1rem;">Newsletter</h3>
         <p style="font-size: 0.9rem; margin: 10px 0; opacity: 0.95;">Get the latest security tips delivered to your inbox weekly.</p>
@@ -171,7 +151,6 @@
         </form>
       </div>
 
-      <!-- Related Articles -->
       <div style="background: var(--panel); padding: 20px; border-radius: var(--radius); margin-bottom: 30px; border: 1px solid var(--line);">
         <h3 style="margin-top: 0; font-size: 1rem; color: var(--ink);">Popular Articles</h3>
         <ul style="list-style: none; padding: 0; margin: 0;">
@@ -188,25 +167,21 @@
             <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: var(--muted);">Security guide</p>
           </li>
           <li style="padding-bottom: 0;">
-          <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: var(--muted);">Action steps</p>
+            <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: var(--muted);">Action steps</p>
           </li>
         </ul>
       </div>
 
-      <!-- Quick Links -->
       <div style="background: var(--panel); padding: 20px; border-radius: var(--radius); border: 1px solid var(--line);">
         <h3 style="margin-top: 0; font-size: 1rem; color: var(--ink);">Quick Links</h3>
         <ul style="list-style: none; padding: 0; margin: 0;">
           <li style="margin-bottom: 12px;"><a href="{% url 'home' %}" style="color: var(--brand); text-decoration: none; font-size: 0.95rem; transition: color 0.3s ease;">All Articles</a></li>
-          <li style="margin-bottom: 12px;"><a href="{% url 'about_page' %}" style="color: var(--brand); text-decoration: none; font-size: 0.95rem; transition: color 0.3s ease;">About Us</a></li>
+          <li style="margin-bottom: 12px;"><a href="{% url 'home' %}#about" style="color: var(--brand); text-decoration: none; font-size: 0.95rem; transition: color 0.3s ease;">About Us</a></li>
           <li style="margin-bottom: 12px;"><a href="{% url 'ideas_page' %}" style="color: var(--brand); text-decoration: none; font-size: 0.95rem; transition: color 0.3s ease;">Share Ideas</a></li>
         </ul>
       </div>
-
     </aside>
-
   </section>
-
 </main>
 
 <style>
