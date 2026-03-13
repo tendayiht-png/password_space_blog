@@ -3,8 +3,7 @@
 
 {% block content %}
 <main class="container py-4">
-  <img src="{% static 'images/blog_image_5.jpg' %}" alt="A person sits at a desk using a laptop to manage passwords, surrounded by digital icons representing security and privacy. The workspace is organized and well-lit, conveying a sense of focus and confidence. Text on the screen reads Password Safe Blog. The overall tone is reassuring and empowering." style="width: 100%; border-radius: 12px; margin-bottom: 24px;">
-  <section class="layout">
+    <section class="layout">
     <article class="article reveal">
       <span class="badge">Personal Cybersecurity</span>
       <h1>Password Safe Blog</h1>
@@ -13,7 +12,6 @@
       </p>
 
       <ul class="info-list" style="margin-top: 20px;">
-        <li><strong>Core Mission:</strong> Simple and practical advice for complex digital threats.</li>
         <li>The blog exists to highlight the risks of weak or reused passwords, such as unauthorized access and identity theft.</li>
         <li><strong>Guides:</strong> This blog covers password manager adoption, 2FA setup, and real-world examples.</li>
         <li><strong>Interactive Focus:</strong> Practical Q&amp;A and community-driven content ideas.</li>
@@ -35,16 +33,7 @@
 
     </article>
 
-    <aside class="sidebar reveal">
-      <h3>Quick Links</h3>
-      <a href="{% url 'how_to_page' %}">How-To 2FA Guide</a>
-      <a href="{% url 'ideas_page' %}">Community Ideas</a>
-      <hr />
-      <h3>Our Focus</h3>
-      <p style="font-size: 0.85rem; color: var(--muted);">
-        We believe strong security doesn't have to be complicated. Every guide here is written for real people, not IT professionals.
-      </p>
-    </aside>
+   
   </section>
 </main>
 {% endblock %}

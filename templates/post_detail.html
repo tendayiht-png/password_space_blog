@@ -4,7 +4,7 @@
 {% block content %}
 <main class="container py-4">
   <!-- Hero Section with Featured Image -->
-  <section class="blog-hero mb-5 reveal" style="background: linear-gradient(135deg, var(--brand-soft), #e8f3f1); border-radius: var(--radius); overflow: hidden; min-height: 400px; display: flex; align-items: center; padding: 60px 40px;layout;">
+  <section class="blog-hero mb-5 reveal" style="background: linear-gradient(135deg, var(--brand-soft), #e8f3f1); border-radius: var(--radius); overflow: hidden; min-height: 400px; display: flex; align-items: center; padding: 60px 40px; layout;">
      <article class="hero-card">
       <span class="badge" style="background: var(--brand); color: white;">Article</span>
       <h1 style="font-size: 2.5rem; font-weight: 700; margin: 20px 0; line-height: 1.2; color: var(--ink);">{{ post.title }}</h1>
@@ -71,19 +71,7 @@
         </a>
       </div>
 
-      <!-- Author Bio Section -->
-      <div style="background: var(--panel); padding: 30px; border-radius: var(--radius); margin-top: 50px; border: 1px solid var(--line);">
-        <h3 style="margin-top: 0; color: var(--ink);">About the Author</h3>
-        <div style="display: flex; gap: 20px; align-items: flex-start;">
-          <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--brand), #0e9589); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 2rem; flex-shrink: 0;">
-            {{ post.author.first_name|first|default:post.author.username|first }}
-          </div>
-          <div>
-            <h4 style="margin: 0 0 8px 0; color: var(--ink);">{{ post.author.first_name|default:post.author.username }}</h4>
-            <p style="margin: 0; color: var(--muted); line-height: 1.6;">
-              Security enthusiast and digital safety advocate. Passionate about helping others protect their online accounts and personal information. Writing practical guides for better password management.
-            </p>
-          </div>
+         </div>
         </div>
       </div>
 
@@ -198,10 +186,7 @@
             <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: var(--muted);">Security guide</p>
           </li>
           <li style="padding-bottom: 0;">
-            <a href="{% url 'checklist_page' %}" style="color: var(--brand); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: color 0.3s ease;">
-              Data Breach Checklist
-            </a>
-            <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: var(--muted);">Action steps</p>
+          <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: var(--muted);">Action steps</p>
           </li>
         </ul>
       </div>
@@ -213,7 +198,6 @@
           <li style="margin-bottom: 12px;"><a href="{% url 'home' %}" style="color: var(--brand); text-decoration: none; font-size: 0.95rem; transition: color 0.3s ease;">All Articles</a></li>
           <li style="margin-bottom: 12px;"><a href="{% url 'about_page' %}" style="color: var(--brand); text-decoration: none; font-size: 0.95rem; transition: color 0.3s ease;">About Us</a></li>
           <li style="margin-bottom: 12px;"><a href="{% url 'ideas_page' %}" style="color: var(--brand); text-decoration: none; font-size: 0.95rem; transition: color 0.3s ease;">Share Ideas</a></li>
-          <li><a href="{% url 'checklist_page' %}" style="color: var(--brand); text-decoration: none; font-size: 0.95rem; transition: color 0.3s ease;">Breach Checklist</a></li>
         </ul>
       </div>
 
