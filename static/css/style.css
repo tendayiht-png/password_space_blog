@@ -185,7 +185,7 @@ main {
 .hero {
   display: grid;
   gap: 24px;
-  grid-template-columns: 1.2fr 0.8fr;
+  grid-template-columns: 1fr;
   align-items: start;
   margin-bottom: 24px;
 }
@@ -207,7 +207,8 @@ main {
 }
 
 .hero-card {
-  padding: 28px;
+  padding: 20px;
+  text-align: center;
 }
 
 .badge {
@@ -267,6 +268,7 @@ p {
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 18px;
+  justify-content: center;
 }
 
 .btn {
@@ -328,7 +330,7 @@ p {
 }
 
 .card {
-  padding: 18px;
+  padding: 12px 16px;
 }
 
 .card a {
@@ -358,6 +360,7 @@ p {
   gap: 8px;
   margin-top: 12px;
   margin-bottom: 12px;
+  justify-content: center;
 }
 
 .pill {
@@ -375,6 +378,7 @@ p {
   padding-bottom: 10px;
   border-bottom: 2px solid var(--line);
   color: var(--ink);
+  text-align: center;
 }
 
 .layout {
