@@ -16,11 +16,12 @@ from django.core.validators import validate_email
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views.decorators.http import require_http_methods
-from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic import DetailView, ListView, RedirectView, TemplateView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import Idea, Post, UserContactProfile
@@ -46,8 +47,11 @@ class PostDetail(DetailView):
     slug_url_kwarg = 'slug'
 
 
-class AboutPageView(TemplateView):
-    template_name = 'about.html'
+class AboutPageView(RedirectView):
+    permanent = False
+
+    def get_redirect_url(self, *args, **kwargs):
+        return f"{reverse('home')}#about"
 
 
 class HowToPageView(TemplateView):

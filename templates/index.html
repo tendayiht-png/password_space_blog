@@ -4,25 +4,23 @@
 {% block content %}
 <img src="{% static 'images/blog_image_4.jpg' %}" alt="Password Safe Blog Image" style="display: block; width: 100%; margin-bottom: 24px;">
 <main class="container">
-    <section class="hero">
+  <section class="hero">
     <article class="hero-card reveal" style="margin-top: 2rem; padding: 1rem; background: #d5efe7; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
       <span class="badge">Personal Cybersecurity</span>         
       <h1>Password Safe Blog</h1>
       <h2 style="margin-top: 12px;">Your Guide to Unbreakable Passwords.</h2> 
-        <p>Read the latest security alerts and practical tips based on industry standards from organizations like the NCSC. Protect your accounts with strong, unique passwords and 2FA.
-        </p>
-
-        <div class="pill-row">
-        <article class="hero-card reveal" style="margin-top: 2rem; padding: 1rem; background: #d5efe7; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-        <h2 style="margin-top: 12px;">Why Security Matters</h2>
-        <p>Every week, we see news of data breaches and account takeovers. Weak or reused passwords are often the common thread. Our blog exists to turn these complex threats into practical wins for you.</p>
-          
-        <div class="pill-row">
-        <article class="hero-card reveal" style="margin-top: 2rem; padding: 1rem; background: #d5efe7; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-        <h2 style="margin-top: 12px;">Our Mission: Turning complex threats into practical wins.</h2>
-        <p>Have you ever faced unauthorized access because of a reused password? We want your story! Your real-world experiences and questions drive our content. By sharing what you’ve learned, you help the next person stay safe.
-        </p>
-        <div class="pill-row">
+      <p>
+        Read the latest security alerts and practical tips based on industry standards from organizations like the NCSC. Protect your accounts with strong, unique passwords and 2FA.
+      </p>
+      <h2 style="margin-top: 12px;">Why Security Matters</h2>
+      <p>
+        Every week, we see news of data breaches and account takeovers. Weak or reused passwords are often the common thread. Our blog exists to turn these complex threats into practical wins for you.
+      </p>
+      <h2 style="margin-top: 12px;">Our Mission: Turning Complex Threats Into Practical Wins</h2>
+      <p>
+        Have you ever faced unauthorized access because of a reused password? We want your story. Your real-world experiences and questions drive our content. By sharing what you have learned, you help the next person stay safe.
+      </p>
+      <div class="pill-row">
         <span class="pill">Long > Complex</span>
         <span class="pill">Unique > Same</span>
         <span class="pill">Managed > Handwritten</span>
@@ -32,7 +30,23 @@
         <a class="btn btn-secondary" href="{% if post_list %}{% url 'post_detail' post_list.0.slug %}{% else %}#featured{% endif %}">Learn Our Approach</a>
       </div>
     </article>
+  </section>
 
+  <section class="hero-card reveal" id="about" style="margin-top: 28px;">
+    <span class="badge">About This Blog</span>
+    <h2 style="margin-top: 12px;">Practical security guidance for everyday users</h2>
+    <ul class="info-list" style="margin-top: 20px; text-align: left;">
+      <li>The blog exists to highlight the risks of weak or reused passwords, such as unauthorized access and identity theft.</li>
+      <li><strong>Guides:</strong> We cover password manager adoption, 2FA setup, and real-world examples.</li>
+      <li><strong>Interactive focus:</strong> Community questions and submitted ideas shape future posts.</li>
+    </ul>
+    <p style="margin-top: 16px;">
+      Our mission is simple: turning complex threats into practical wins. Your real-world stories help us build better, more useful security guidance for everyone.
+    </p>
+    <div class="hero-actions" style="margin-top: 18px;">
+      <a class="btn btn-primary" href="#featured">Read the Latest Articles</a>
+      <a class="btn btn-secondary" href="{% url 'ideas_page' %}">Share Your Experience</a>
+    </div>
   </section>
 
   {% if post_list %}
@@ -57,7 +71,7 @@
     <span class="badge">Help Shape This Blog</span>
     <h2 style="margin-top: 12px;">Share Your Ideas With Us</h2>
     <p>
-         Got a password horror story or a security win? Share your experience (anonymously!) to help others avoid the same traps. Your story could be the 'lesson learned' in our next article! We welcome all stories, from the "I got hacked because I reused a password" to "I switched to a password manager and never looked back." Your insights can make a real difference in helping others improve their security habits.
+      Got a password horror story or a security win? Share your experience (anonymously!) to help others avoid the same traps. Your story could be the 'lesson learned' in our next article! We welcome all stories, from the "I got hacked because I reused a password" to "I switched to a password manager and never looked back." Your insights can make a real difference in helping others improve their security habits.
     </p>
     <a class="btn btn-primary" href="{% url 'ideas_page' %}">Submit Your Idea</a>
   </section>
