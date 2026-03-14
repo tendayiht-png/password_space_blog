@@ -16,7 +16,7 @@ Password Safe Blog is a Django web application focused on practical password sec
 
 ### Prerequisites
 
-- Python 3.12 or compatible Python 3 environment
+- Python 3.12 
 - pip
 - Git
 
@@ -104,15 +104,15 @@ This project is configured for Heroku-style deployment.
 
 ## User Stories
 
-### Visitor Stories
+### User Stories
 
-- As a visitor, I want to browse the latest security articles on the home page so that I can quickly find practical password guidance.
-- As a visitor, I want to open a full article page so that I can read detailed cybersecurity advice and examples.
-- As a visitor, I want to understand what the blog is about from the home page so that I can decide whether the content is relevant to me.
-- As a visitor, I want to access a step-by-step 2FA guide so that I can improve the security of my important accounts.
-- As a visitor, I want to submit an idea for a future article so that I can influence the topics covered by the blog.
-- As a visitor, I want to register for an account so that I can manage my submissions and participate more fully in the site.
-- As a visitor, I want to reset my password if I forget it so that I can regain access securely.
+- As a user, I want to browse the latest security articles on the home page so that I can quickly find practical password guidance.
+- As a user, I want to open a full article page so that I can read detailed cybersecurity advice and examples.
+- As a user, I want to understand what the blog is about from the home page so that I can decide whether the content is relevant to me.
+- As a user, I want to access a step-by-step 2FA guide so that I can improve the security of my important accounts.
+- As a user, I want to submit an idea for a future article so that I can influence the topics covered by the blog.
+- As a user, I want to register for an account so that I can manage my submissions and participate more fully in the site.
+- As a user, I want to reset my password if I forget it so that I can regain access securely.
 
 ### Registered User Stories
 
@@ -171,15 +171,15 @@ Focus: Protect the platform and preserve community content over time.
 
 ### Home and Content Browsing
 
-- Given a visitor lands on the home page, when the page loads, then they can see the blog introduction, About section, latest articles, and latest community ideas.
-- Given a visitor clicks a latest article, when the destination opens, then the full article page is displayed.
-- Given a visitor opens `/about/`, when the request is processed, then they are redirected to the Home page About section.
+- Given a user lands on the home page, when the page loads, then they can see the blog introduction, About section, latest articles, and latest community ideas.
+- Given a user clicks a latest article, when the destination opens, then the full article page is displayed.
+- Given a user opens `/about/`, when the request is processed, then they are redirected to the Home page About section.
 
 ### Ideas Submission and Participation
 
-- Given a visitor completes the ideas form with valid details, when they submit it, then the idea is saved and a success message is shown.
+- Given a user completes the ideas form with valid details, when they submit it, then the idea is saved and a success message is shown.
 - Given an authenticated user opens the ideas page, when the form renders, then their account details can be prefilled where available.
-- Given a visitor or user views the ideas page, when community ideas exist, then the submitted ideas are listed.
+- Given a user views the ideas page, when community ideas exist, then the submitted ideas are listed.
 
 ### User Account Flows
 
