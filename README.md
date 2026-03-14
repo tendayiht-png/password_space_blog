@@ -198,3 +198,25 @@ Focus: Protect the platform and preserve community content over time.
 - Given an admin opens the unallocated ideas area, when unowned ideas exist, then they are visible for review.
 - Given repeated idea submissions exceed the configured rate limit, when another submission is attempted, then the request is blocked with an appropriate message.
 - Given a bot fills the honeypot field, when the form is submitted, then the submission is not processed as a real user submission.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

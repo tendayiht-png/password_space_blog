@@ -24,7 +24,7 @@
       </div>
       <div class="hero-actions">
         <a class="btn btn-primary" href="#featured">Explore Articles</a>
-        <a class="btn btn-secondary" href="{% if post_list %}{% url 'post_detail' post_list.0.slug %}{% else %}#featured{% endif %}">Learn Our Approach</a>
+        
       </div>
     </article>
 
@@ -32,8 +32,8 @@
       <span class="badge">About This Blog</span>
       <h2 style="margin-top: 12px;">Practical security guidance for everyday users</h2>
       <ul class="info-list" style="margin-top: 20px; text-align: left;">
-        <li>The blog exists to highlight the risks of weak or reused passwords, such as unauthorized access and identity theft.</li>
-        <li><strong>Guides:</strong> We cover password manager adoption, 2FA setup, and real-world examples.</li>
+        <li>Your digital life is only as safe as your weakest password—this blog exposes the catastrophic risks of reuse and laziness.</li>
+        <li><strong>Cyber Security 101: Password Adoption, 2FA Activation, & Case Studies.</strong></li>
         <li><strong>Interactive focus:</strong> Community questions and submitted ideas shape future posts.</li>
       </ul>
       <p style="margin-top: 16px;">
@@ -56,7 +56,7 @@
           <div style="font-size: 0.85rem; color: var(--muted); margin-top: 8px;">
             {{ post.created_on|date:"M d, Y" }}
           </div>
-          <a href="{% url 'post_detail' post.slug %}" style="display: inline-block; margin-top: 12px;">Read Article →</a>
+        <a href="{% url 'post_detail' post.slug %}" style="display: inline-block; margin-top: 12px;">Read Article →</a>
         </article>
       {% endfor %}
     </section>
