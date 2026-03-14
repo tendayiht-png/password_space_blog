@@ -3,7 +3,9 @@
 
 {% block content %}
 <main class="container py-4">
-  <img src="{% static 'images/blog_image_4.jpg' %}" alt="Password Safe Blog Image" style="display: block; width: 100%; margin-bottom: 24px;">
+  {% if post.slug != 'digital-legacy-emergency-access-family-protection' %}
+    <img src="{% static 'images/blog_image_4.jpg' %}" alt="Password Safe Blog Image" style="display: block; width: 100%; margin-bottom: 24px;">
+  {% endif %}
 
   <section class="hero">
     <article class="hero-card reveal" style="background: linear-gradient(135deg, var(--brand-soft), #e8f3f1);">
