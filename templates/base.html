@@ -36,8 +36,7 @@
                 <span style="font-weight: 700; color: var(--ink);">Password Safe Blog</span>
             </a>
             <div class="top-nav">
-                <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Home</a>
-                <a class="nav-link" href="{% url 'home' %}#about">About</a>
+                <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">About</a>
                 <a class="nav-link" href="{% url 'how_to_page' %}">How-To 2FA</a>
                 <a class="nav-link" href="{% url 'ideas_page' %}">Share Ideas</a>
                 {% if user.is_authenticated %}
@@ -83,7 +82,7 @@
         title="Back to Home"
     >
         <i id="backHomeArrowGlyph" class="fas fa-home" aria-hidden="true"></i>
-        <span id="backHomeArrowText" class="back-home-arrow-text">Home</span>
+        <span id="backHomeArrowText" class="back-home-arrow-text">About</span>
     </a>
 
     <!-- Footer -->
