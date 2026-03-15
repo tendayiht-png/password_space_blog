@@ -358,6 +358,7 @@ p {
 .card-text {
   color: var(--muted);
   line-height: 1.8;
+  overflow-wrap: anywhere;
 }
 
 .card-title {
@@ -398,6 +399,10 @@ p {
   padding: 28px;
 }
 
+.layout > * {
+  min-width: 0;
+}
+
 .article {
   border: none;
   background: transparent;
@@ -406,6 +411,53 @@ p {
 
 .article section {
   margin-bottom: 20px;
+}
+
+.article-content {
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.article-content > * {
+  max-width: 100%;
+}
+
+.article-content img,
+.article-content video,
+.article-content canvas,
+.article-content svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.article-content iframe,
+.article-content embed,
+.article-content object {
+  width: 100%;
+  max-width: 100%;
+}
+
+.article-content table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.article-content pre {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.article-content code {
+  white-space: break-spaces;
+  overflow-wrap: anywhere;
 }
 
 .article section h2 {
@@ -418,6 +470,7 @@ p {
 .article li {
   color: var(--muted);
   line-height: 1.8;
+  overflow-wrap: anywhere;
 }
 
 .article ol,
@@ -783,6 +836,7 @@ a:hover {
 @media (max-width: 900px) {
   .layout {
     grid-template-columns: 1fr;
+    gap: 18px;
   }
 
   .sidebar {
@@ -845,6 +899,17 @@ a:hover {
 
   .layout {
     padding: 16px;
+  }
+
+  .article-content {
+    font-size: 1rem !important;
+    line-height: 1.7 !important;
+  }
+
+  .article-content ul,
+  .article-content ol {
+    margin-left: 0;
+    padding-left: 18px;
   }
 
   table {
