@@ -7,6 +7,7 @@
 ### 1. Real-time Password Strength Meter
 - **Library:** zxcvbn (intelligent pattern detection)
 - **UI:** 5-level color scale (Red → Orange → Yellow → Teal → Dark Green)
+
 - **Feedback:** Contextual advice (e.g., "Add more random words")
 - **Used in:** Registration & Password Reset pages
 
