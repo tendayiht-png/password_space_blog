@@ -1,179 +1,116 @@
-{% extends "base.html" %}
-{% load static %}
-
-{% block content %}
-<main class="container py-4">
-  <section class="hero">
-    <article class="hero-card reveal" style="background: linear-gradient(135deg, var(--brand-soft), #e8f3f1);">
-      <span class="badge" style="background: var(--brand); color: #fff;">Article</span>
-      <h1 style="font-size: 2.5rem; font-weight: 700; margin: 20px 0; line-height: 1.2; color: var(--ink);">{{ post.title }}</h1>
-      <p style="font-size: 1.1rem; color: var(--muted); margin: 0;">Discover practical security tips and best practices.</p>
-    </article>
-  </section>
-
-  <section class="layout" style="display: grid; grid-template-columns: 1fr 320px; gap: 40px; max-width: 1200px; margin: 0 auto;">
-    <article class="article reveal">
-      <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
-        <div style="display: flex; align-items: center; gap: 15px;">
-          <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--brand-soft); display: flex; align-items: center; justify-content: center; color: var(--brand); font-weight: 700;">
-            {{ post.author.first_name|first|default:post.author.username|first }}
-          </div>
-          <div>
-            <p style="margin: 0; font-weight: 600; color: var(--ink);">{{ post.author.first_name|default:post.author.username }}</p>
-            <p style="margin: 0; font-size: 0.9rem; color: var(--muted);">{{ post.created_on|date:"M d, Y" }}</p>
-          </div>
-        </div>
-
-        <div style="display: flex; gap: 12px; align-items: center;">
-          <span style="font-size: 0.9rem; color: var(--muted); font-weight: 600;">Share:</span>
-          <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ post.title }}" target="_blank" rel="noopener noreferrer" style="width: 36px; height: 36px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #1da1f2; text-decoration: none; transition: all 0.3s ease;" class="share-btn">
-            <i class="fab fa-twitter"></i>
-          </a>
-          <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri }}" target="_blank" rel="noopener noreferrer" style="width: 36px; height: 36px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #0a66c2; text-decoration: none; transition: all 0.3s ease;" class="share-btn">
-            <i class="fab fa-linkedin-in"></i>
-          </a>
-          <a href="mailto:?subject={{ post.title }}&body={{ request.build_absolute_uri }}" style="width: 36px; height: 36px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: var(--brand); text-decoration: none; transition: all 0.3s ease;" class="share-btn">
-            <i class="fas fa-envelope"></i>
-          </a>
-        </div>
-      </div>
-
-      <div class="article-content" style="font-size: 1.05rem; line-height: 1.8; color: var(--ink);">
-        {% if post.excerpt %}
-          <p style="font-size: 1.2rem; font-weight: 500; color: var(--brand); margin-bottom: 25px; padding-left: 20px; border-left: 4px solid var(--brand);">
-            {{ post.excerpt }}
-          </p>
-        {% endif %}
-        {{ post.content|safe }}
-      </div>
-
-      <div style="margin: 40px 0; padding: 20px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);">
-        <p style="margin: 0 0 12px 0; font-weight: 600; color: var(--muted); text-transform: uppercase; font-size: 0.8rem;">Topic:</p>
-        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-          <span style="background: var(--brand-soft); color: var(--brand); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">Security Tips</span>
-          <span style="background: var(--brand-soft); color: var(--brand); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">Password Management</span>
-        </div>
-      </div>
-
-      <div style="display: flex; gap: 15px; margin-top: 40px;">
-        <a class="btn btn-primary" href="{% url 'home' %}" style="background: var(--brand); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: background 0.3s ease;">
-          <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>Back to All Articles
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Password Safe Blog Wireframe - Post Detail</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="wireframe-header">
+      <div class="container header-inner">
+        <a class="logo" href="./index.html">
+          <span class="logo-mark">PS</span>
+          <span>Password Safe Blog</span>
         </a>
+        <nav class="top-nav" aria-label="Wireframe pages">
+          <a href="./index.html">Home</a>
+          <a href="./post-detail.html">Article</a>
+          <a href="./how-to-2fa.html">How-To 2FA</a>
+          <a href="./breach-checklist.html">Breach Checklist</a>
+        </nav>
       </div>
+    </header>
 
-      <section style="margin-top: 60px;">
-        <h2 style="font-size: 1.8rem; color: var(--ink); margin-bottom: 30px;">Comments</h2>
+    <main class="container">
+      <section class="layout">
+        <article class="article reveal">
+          <span class="badge">Post Detail Wireframe</span>
+          <h1>Why Password Reuse Is Risky: One Breach Can Unlock Everything</h1>
+          <p>
+            Wireframe goal: show a scannable post structure with intro, myth-busting,
+            a practical checklist, and a clear action takeaway.
+          </p>
 
-        {% if post.comments.all %}
-          <div style="margin-bottom: 40px;">
-            {% for comment in post.comments.all %}
-              {% if comment.approved %}
-                <div style="background: var(--panel); padding: 25px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid var(--brand);">
-                  <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
-                    <div>
-                      <h3 style="margin: 0; color: var(--ink);">{{ comment.author.first_name|default:comment.author.username }}</h3>
-                      <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: var(--muted);">{{ comment.created_on|date:"M d, Y \a\t H:i" }}</p>
-                    </div>
-                  </div>
-                  <p style="margin: 0; color: var(--ink); line-height: 1.6;">{{ comment.body }}</p>
-                </div>
-              {% endif %}
-            {% endfor %}
-          </div>
-        {% else %}
-          <p style="color: var(--muted); font-style: italic;">No comments yet. Be the first to share your thoughts!</p>
-        {% endif %}
-
-        <!-- Comment Form -->
-        {% if user.is_authenticated %}
-          <div style="background: var(--panel-strong); padding: 30px; border-radius: var(--radius); border: 1px solid var(--line); margin-top: 30px;">
-            <h3 style="margin-top: 0; color: var(--ink);">Leave a Comment</h3>
-            <form method="post" action="{% url 'post_detail' post.slug %}" novalidate>
-              {% csrf_token %}
-              <div class="mb-3">
-                <textarea
-                  name="comment"
-                  id="comment"
-                  rows="5"
-                  class="form-control"
-                  placeholder="Share your thoughts..."
-                  required
-                  style="padding: 12px; border: 1px solid var(--line); border-radius: 8px; font-family: inherit; font-size: 1rem; resize: vertical;"
-                ></textarea>
-              </div>
-              <button type="submit" class="btn" style="background: var(--brand); color: white; padding: 12px 32px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.3s ease;">
-                Post Comment
-              </button>
-            </form>
-          </div>
-        {% else %}
-          <div style="background: var(--brand-soft); padding: 25px; border-radius: var(--radius); border: 1px solid var(--brand); text-align: center;">
-            <p style="margin: 0; color: var(--brand);">
-              <a href="{% url 'login_page' %}" style="color: var(--brand); font-weight: 600; text-decoration: none;">Sign in</a> or <a href="{% url 'register_page' %}" style="color: var(--brand); font-weight: 600; text-decoration: none;">Create an account</a> to leave a comment.
+          <section id="problem">
+            <h2>The Problem</h2>
+            <p>
+              Reusing one password across services creates a chain reaction. When one site is
+              compromised, attackers test those same credentials elsewhere.
             </p>
+            <p class="warning">
+              Content callout zone: emphasize impact without fear-based language.
+            </p>
+          </section>
+
+          <section id="myth">
+            <h2>Myth vs Reality</h2>
+            <ul>
+              <li><strong>Myth:</strong> Symbols in short passwords always make them safe.</li>
+              <li><strong>Reality:</strong> Length and uniqueness usually provide stronger defense.</li>
+              <li><strong>Myth:</strong> Rotating weak passwords monthly is enough.</li>
+              <li><strong>Reality:</strong> Unique, long passwords in a vault are more sustainable.</li>
+            </ul>
+          </section>
+
+          <section id="checklist">
+            <h2>Reader Checklist</h2>
+            <ol>
+              <li>Identify your top 10 critical accounts.</li>
+              <li>Create unique passphrases for each high-risk account.</li>
+              <li>Enable 2FA for email, banking, and cloud storage.</li>
+              <li>Save credentials only in a secure password manager.</li>
+            </ol>
+          </section>
+
+          <section id="comparison">
+            <h2>Comparison Block Placeholder</h2>
+            <p>
+              Reserved section for "Browser Password Managers vs Dedicated Managers" with pros,
+              cons, and fit-by-user profile.
+            </p>
+          </section>
+
+          <section id="future">
+            <h2>Future of Authentication</h2>
+            <p>
+              Add a short explainer on passkeys and biometrics. Keep it practical: what users can do now.
+            </p>
+          </section>
+
+          <section id="calendar">
+            <h2>Sample Weekly Cadence</h2>
+            <ul>
+              <li>Week A: one how-to guide + one myth-busting post.</li>
+              <li>Week B: one scenario checklist + one trend explainer.</li>
+            </ul>
+          </section>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="./how-to-2fa.html">Next: How-To Wireframe</a>
+            <a class="btn btn-secondary" href="./breach-checklist.html">Next: Breach Checklist</a>
           </div>
-        {% endif %}
+        </article>
+
+        <aside class="sidebar reveal">
+          <h3>On This Page</h3>
+          <a href="#problem">The Problem</a>
+          <a href="#myth">Myth vs Reality</a>
+          <a href="#checklist">Reader Checklist</a>
+          <a href="#comparison">Comparison Block</a>
+          <a href="#future">Future of Authentication</a>
+          <a href="#calendar">Weekly Cadence</a>
+          <hr />
+          <h3>Related Wireframes</h3>
+          <a href="./index.html">Homepage</a>
+          <a href="./how-to-2fa.html">How-To 2FA</a>
+          <a href="./breach-checklist.html">Breach Checklist</a>
+        </aside>
       </section>
-    </article>
 
-    <aside class="sidebar reveal">
-      <div style="background: linear-gradient(135deg, var(--brand), #0e9589); color: white; padding: 25px; border-radius: var(--radius); margin-bottom: 30px; text-align: center;">
-        <h3 style="margin-top: 0; color: white; font-size: 1.1rem;">Newsletter</h3>
-        <p style="font-size: 0.9rem; margin: 10px 0; opacity: 0.95;">Get the latest security tips delivered to your inbox weekly.</p>
-        <form method="post" style="margin-top: 15px;">
-          <input
-            type="email"
-            name="newsletter_email"
-            placeholder="Your email"
-            style="width: 100%; padding: 10px 12px; border: none; border-radius: 6px; margin-bottom: 10px; font-size: 0.9rem;"
-            required
-          >
-          <button type="submit" style="width: 100%; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: background 0.3s ease;">
-            Subscribe
-          </button>
-        </form>
-      </div>
-
-      <div style="background: var(--panel); padding: 20px; border-radius: var(--radius); margin-bottom: 30px; border: 1px solid var(--line);">
-        <h3 style="margin-top: 0; font-size: 1rem; color: var(--ink);">Popular Articles</h3>
-        <ul style="list-style: none; padding: 0; margin: 0;">
-          <li style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--line);">
-            <a href="{% url 'home' %}" style="color: var(--brand); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: color 0.3s ease;">
-              Getting Started with Password Managers
-            </a>
-            <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: var(--muted);">Essential guide</p>
-          </li>
-          <li style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--line);">
-            <a href="{% url 'how_to_page' %}" style="color: var(--brand); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: color 0.3s ease;">
-              How to Enable 2FA on Your Accounts
-            </a>
-            <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: var(--muted);">Security guide</p>
-          </li>
-          <li style="padding-bottom: 0;">
-            <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: var(--muted);">Action steps</p>
-          </li>
-        </ul>
-      </div>
-
-    </aside>
-  </section>
-</main>
-
-<style>
-  .share-btn:hover {
-    background: var(--brand-soft) !important;
-    transform: translateY(-2px);
-  }
-
-  @media (max-width: 768px) {
-    .layout {
-      grid-template-columns: 1fr !important;
-    }
-
-    main > section:first-of-type {
-      padding: 40px 20px !important;
-    }
-  }
-</style>
-
-{% endblock %}
+      <footer class="footer">
+        <p>Post detail wireframe with content placeholders and conversion points.</p>
+      </footer>
+    </main>
+  </body>
+</html>
