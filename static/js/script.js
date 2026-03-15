@@ -15,26 +15,35 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Add animation delay to reveal elements
+    // Add animation delay to reveal elements.
+    // Use a low threshold so very long article blocks still become visible on mobile.
     const reveals = document.querySelectorAll('.reveal');
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -100px 0px'
-    };
 
-    const observer = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                observer.unobserve(entry.target);
-            }
+    if ('IntersectionObserver' in window) {
+        const observerOptions = {
+            threshold: 0,
+            rootMargin: '0px 0px -60px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        reveals.forEach(reveal => {
+            reveal.style.opacity = '0';
+            observer.observe(reveal);
         });
-    }, observerOptions);
-
-    reveals.forEach(reveal => {
-        reveal.style.opacity = '0';
-        observer.observe(reveal);
-    });
+    } else {
+        // Fallback for older mobile browsers without IntersectionObserver support.
+        reveals.forEach(reveal => {
+            reveal.style.opacity = '1';
+        });
+    }
 
     // Add active state to navigation based on current page
     const currentPath = window.location.pathname;
