@@ -304,6 +304,9 @@ def ideas_page(request):
     errors = {}
     success_message = ''
 
+    if request.user.is_authenticated:
+        _claim_unowned_ideas_for_user(request.user)
+
     if request.method == 'POST':
         # Hidden honeypot field catches basic form bots.
         if request.POST.get('website', '').strip():
@@ -355,6 +358,10 @@ def ideas_page(request):
             messages.success(request, 'Thank you, your idea has been submitted.')
             return redirect('ideas_page')
 
+    community_ideas = Idea.objects.select_related('owner').order_by('-created_on')
+    if request.user.is_authenticated:
+        community_ideas = community_ideas.exclude(owner=request.user)
+
     return render(
         request,
         'ideas.html',
@@ -362,7 +369,7 @@ def ideas_page(request):
             'form_data': form_data,
             'errors': errors,
             'success_message': success_message,
-            'community_ideas': Idea.objects.select_related('owner').order_by('-created_on'),
+            'community_ideas': community_ideas,
         },
     )
 
