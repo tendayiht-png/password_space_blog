@@ -215,6 +215,75 @@ main {
   text-align: center;
 }
 
+.about-motion-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: #10221f;
+  text-align: left;
+}
+
+.about-motion-card::before {
+  content: "";
+  position: absolute;
+  inset: -8%;
+  z-index: -2;
+  background:
+    linear-gradient(150deg, rgba(9, 20, 22, 0.68), rgba(14, 48, 44, 0.52)),
+    url("../images/blog_image_4.jpg") center/cover no-repeat;
+  transform: scale(1.08);
+  animation: about-pan 20s ease-in-out infinite alternate;
+}
+
+.about-motion-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(6, 14, 15, 0.2) 0%, rgba(6, 14, 15, 0.58) 100%);
+}
+
+.about-motion-card h2,
+.about-motion-card p,
+.about-motion-card li {
+  color: #f2f7f5;
+}
+
+.about-motion-card .badge {
+  background: rgba(219, 245, 239, 0.94);
+  border-color: rgba(150, 214, 202, 0.95);
+}
+
+.about-motion-card .info-list li {
+  color: #ecf6f3;
+}
+
+.about-motion-card strong {
+  color: #ffffff;
+}
+
+@keyframes about-pan {
+  0% {
+    transform: scale(1.09) translate3d(-2.5%, -2%, 0);
+    filter: saturate(1) brightness(0.86);
+  }
+  50% {
+    transform: scale(1.14) translate3d(1.5%, -1%, 0);
+    filter: saturate(1.08) brightness(0.92);
+  }
+  100% {
+    transform: scale(1.1) translate3d(2.2%, 2.2%, 0);
+    filter: saturate(1.03) brightness(0.88);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-motion-card::before {
+    animation: none;
+    transform: scale(1.08);
+  }
+}
+
 @media (max-width: 900px) {
   .home-intro-grid {
     grid-template-columns: 1fr;

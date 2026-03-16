@@ -134,6 +134,24 @@
       resultMessage.className = "form-result";
     }
 
+    function showRegistrationSuccess(message, loginUrl) {
+      resultMessage.className = "form-result success";
+      resultMessage.textContent = "";
+
+      const messageText = document.createElement("span");
+      messageText.textContent = message;
+      resultMessage.appendChild(messageText);
+
+      const loginLink = document.createElement("a");
+      loginLink.href = loginUrl || "/login/";
+      loginLink.textContent = "Go to Login";
+      loginLink.style.marginLeft = "8px";
+      loginLink.style.fontWeight = "800";
+      loginLink.style.textDecoration = "underline";
+      loginLink.style.color = "inherit";
+      resultMessage.appendChild(loginLink);
+    }
+
     function updateStrength() {
       const value = passwordInput.value;
       if (!value) {
@@ -277,8 +295,10 @@
         const data = await response.json();
 
         if (response.ok && data.ok) {
-          resultMessage.textContent = data.message;
-          resultMessage.className = "form-result success";
+          showRegistrationSuccess(
+            data.message || "Registration successful. Your account is ready.",
+            data.login_url
+          );
           form.reset();
           clearPasswordFields(false);
           emailHelp.textContent = "";

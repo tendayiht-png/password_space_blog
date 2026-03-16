@@ -445,6 +445,31 @@ def _registration_errors(username, email, telephone, password, confirm_password)
     return errors
 
 
+def _send_registration_confirmation_email(user):
+    """Send a post-signup confirmation email without blocking registration flow."""
+    if not user or not user.email:
+        return False
+
+    subject = 'Welcome to Password Space Blog'
+    message = (
+        f"Hi {user.username},\n\n"
+        "Your account was created successfully on Password Space Blog.\n"
+        "You can now sign in and start sharing your ideas with the community.\n\n"
+        "If you did not create this account, please contact support immediately.\n\n"
+        "Best regards,\n"
+        "Password Space Blog Team"
+    )
+
+    sent_count = send_mail(
+        subject=subject,
+        message=message,
+        from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@passwordspaceblog.com'),
+        recipient_list=[user.email],
+        fail_silently=True,
+    )
+    return bool(sent_count)
+
+
 @require_http_methods(['GET', 'POST'])
 def register_api(request):
     """
@@ -497,10 +522,17 @@ def register_api(request):
         defaults={'telephone': _normalize_telephone(telephone)},
     )
 
+    confirmation_email_sent = _send_registration_confirmation_email(user)
+    success_message = 'Registration successful. Your account is ready.'
+    if confirmation_email_sent:
+        success_message += ' A confirmation email has been sent.'
+
     return JsonResponse(
         {
             'ok': True,
-            'message': 'Registration successful.',
+            'message': success_message,
+            'confirmation_email_sent': confirmation_email_sent,
+            'login_url': reverse('login_page'),
             'user': {
                 'id': user.id,
                 'username': user.username,
