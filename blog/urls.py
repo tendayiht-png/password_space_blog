@@ -19,7 +19,6 @@ urlpatterns = [
     path('reset-password/<uidb64>/<token>/', views.ResetPasswordView.as_view(), name='reset_password_page'),
     path('API/login', views.login_api, name='login_api'),
     path('API/register', views.register_api, name='register_api'),
-    path('API/register/', views.register_api),
     path('API/delete-account', views.delete_account_api, name='delete_account_api'),
     path('API/password-reset-request', views.password_reset_request_api, name='password_reset_request_api'),
     path('API/password-reset-confirm', views.password_reset_confirm_api, name='password_reset_confirm_api'),

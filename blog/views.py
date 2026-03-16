@@ -1,5 +1,5 @@
 import json
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib import messages
@@ -101,9 +101,6 @@ def _claim_unowned_ideas_for_user(user):
 
 @login_required(login_url='/login/')
 def my_ideas_page(request):
-    from datetime import datetime, timedelta
-    from django.db.models import Q
-
     _claim_unowned_ideas_for_user(request.user)
 
     ideas = Idea.objects.filter(owner=request.user).order_by('-created_on')
