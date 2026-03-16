@@ -199,18 +199,31 @@ Focus: Protect the platform and preserve community content over time.
 - Given repeated idea submissions exceed the configured rate limit, when another submission is attempted, then the request is blocked with an appropriate message.
 - Given a bot fills the honeypot field, when the form is submitted, then the submission is not processed as a real user submission.
 
-## Blog Wireframes Screenshots
-![About Page Wireframe](20260315_231045.jpg)
+## Diagrams
 
-![Share Ideas Page Wireframe](20260315_235447.jpg)
+- Mermaid ER diagram source: [ERDiagram.md](ERDiagram.md)
+- Graphviz ER diagram source: [ERDiagram.dot](ERDiagram.dot)
 
-![Login Page Wireframe](20260316_001616.jpg)
 
-![Register Page Wireframe](20260316_001730.jpg)
 
-## Entity Relation Diagram
 
-![ERDiagram](image-1.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

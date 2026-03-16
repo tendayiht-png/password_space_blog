@@ -1,12 +1,10 @@
 # Password Space Blog - Entity Relationship Diagram
 
-This diagram shows the database schema for the Password Space Blog application, including authentication, blog posts, comments, and JWT token management.
+This diagram shows the database schema for the Password Space Blog application, including authentication, blog posts, and JWT token management.
 
 ```mermaid
 erDiagram
     USER ||--o{ POST : "authors"
-    USER ||--o{ COMMENT : "writes"
-    POST ||--o{ COMMENT : "has"
     USER ||--o{ OUTSTANDING_TOKEN : "owns"
     OUTSTANDING_TOKEN ||--o| BLACKLISTED_TOKEN : "references"
     USER ||--o{ LOG_ENTRY : "performs"
@@ -35,15 +33,6 @@ erDiagram
         int status
         datetime created_on
         datetime updated_on
-    }
-
-    COMMENT {
-        int id
-        int post_id
-        int author_id
-        text body
-        boolean approved
-        datetime created_on
     }
 
     OUTSTANDING_TOKEN {
@@ -79,7 +68,6 @@ erDiagram
 |-------|---------|
 | **User** | Authentication & user profiles (Argon2 hashed, 12+ chars min) |
 | **Post** | Blog posts with author, slug, draft/published status |
-| **Comment** | Post comments with approval moderation |
 | **OutstandingToken** | Active JWT refresh tokens |
 | **BlacklistedToken** | Revoked/logged-out tokens |
 | **LogEntry** | Django admin audit trail |
@@ -87,8 +75,6 @@ erDiagram
 ## Key Relationships
 
 - User → Post (1:M, cascade delete)
-- User → Comment (1:M, cascade delete)
-- Post → Comment (1:M, cascade delete)
 - User → OutstandingToken (1:M, cascade delete)
 - OutstandingToken → BlacklistedToken (1:1)
 
@@ -103,7 +89,6 @@ erDiagram
 
 - **Ordering**:
   - `Post`: Ordered by `-created_on` (newest first)
-  - `Comment`: Ordered by `created_on` (oldest first)
 
 ## Security Features
 

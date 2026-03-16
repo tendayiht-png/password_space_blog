@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Comment, Idea, Post, UserContactProfile
+from .models import Idea, Post, UserContactProfile
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
@@ -7,13 +7,6 @@ class PostAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
     list_filter = ('status', 'created_on')
     search_fields = ('title', 'content')
-
-
-@admin.register(Comment)
-class CommentAdmin(admin.ModelAdmin):
-    list_display = ('post', 'author', 'approved', 'created_on')
-    list_filter = ('approved', 'created_on')
-    search_fields = ('body',)
 
 
 @admin.register(Idea)

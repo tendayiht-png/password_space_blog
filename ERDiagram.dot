@@ -163,57 +163,6 @@ digraph password_space_blog_erd {
     </TABLE>
   >]
 
-  Comment [label=<
-    <TABLE BGCOLOR="white" BORDER="2" CELLBORDER="0" CELLSPACING="0">
-    <TR><TD COLSPAN="2" CELLPADDING="8" ALIGN="CENTER" BGCOLOR="#f57c00">
-    <FONT FACE="Roboto Bold" COLOR="white" POINT-SIZE="12"><B>Comment</B></FONT>
-    </TD></TR>
-    <TR><TD COLSPAN="2" BGCOLOR="#fff3e0"><FONT FACE="Roboto" POINT-SIZE="8">User Comment Model</FONT></TD></TR>
-    
-    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
-    <FONT FACE="Roboto Bold"><B>🔑 id</B></FONT>
-    </TD><TD ALIGN="LEFT">
-    <FONT FACE="Roboto">BigAutoField (PK)</FONT>
-    </TD></TR>
-    
-    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
-    <FONT FACE="Roboto Bold"><B>🔗 post_id</B></FONT>
-    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
-    <FONT FACE="Roboto">ForeignKey → Post</FONT>
-    </TD></TR>
-    
-    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
-    <FONT FACE="Roboto Bold"><B>🔗 author_id</B></FONT>
-    </TD><TD ALIGN="LEFT">
-    <FONT FACE="Roboto">ForeignKey → User</FONT>
-    </TD></TR>
-    
-    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
-    <FONT FACE="Roboto">body</FONT>
-    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
-    <FONT FACE="Roboto">TextField</FONT>
-    </TD></TR>
-    
-    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
-    <FONT FACE="Roboto">approved</FONT>
-    </TD><TD ALIGN="LEFT">
-    <FONT FACE="Roboto">BooleanField</FONT>
-    </TD></TR>
-    
-    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4" BGCOLOR="#f5f5f5">
-    <FONT FACE="Roboto">created_on</FONT>
-    </TD><TD ALIGN="LEFT" BGCOLOR="#f5f5f5">
-    <FONT FACE="Roboto">DateTimeField (auto)</FONT>
-    </TD></TR>
-    
-    <TR><TD ALIGN="LEFT" BORDER="0" CELLPADDING="4">
-    <FONT FACE="Roboto">new_field</FONT>
-    </TD><TD ALIGN="LEFT">
-    <FONT FACE="Roboto">SlugField</FONT>
-    </TD></TR>
-    </TABLE>
-  >]
-
   // ====================
   // JWT TOKEN TABLES
   // ====================
@@ -303,22 +252,6 @@ digraph password_space_blog_erd {
     color = "#1565c0"
   ]
 
-  User -> Comment [
-    arrowhead = "crow"
-    arrowtail = "none"
-    label = "  writes  "
-    fontsize = 9
-    color = "#f57c00"
-  ]
-
-  Post -> Comment [
-    arrowhead = "crow"
-    arrowtail = "none"
-    label = "  has  "
-    fontsize = 9
-    color = "#f57c00"
-  ]
-
   // JWT relationships
   User -> OutstandingToken [
     arrowhead = "crow"
@@ -338,6 +271,6 @@ digraph password_space_blog_erd {
   ]
 
   // Layout hints
-  { rank = same; Post; Comment; }
+  { rank = same; Post; }
   { rank = same; OutstandingToken; BlacklistedToken; }
 }
