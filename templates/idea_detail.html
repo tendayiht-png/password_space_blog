@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container py-4">
+  <section class="hero-card reveal" style="max-width: 900px; margin: 0 auto;">
+    <span class="badge">Community Idea</span>
+    <h1 style="margin-top: 12px;">{{ idea_obj.title|default:idea_obj.idea|truncatechars:90 }}</h1>
+    <p class="text-muted" style="margin-top: 8px;">
+      Submitted by {{ idea_obj.name }} on {{ idea_obj.created_on|date:"M d, Y H:i" }}
+    </p>
+
+    <hr class="my-4">
+
+    <div style="line-height: 1.7;">
+      {{ idea_obj.idea|linebreaksbr }}
+    </div>
+
+    <div style="margin-top: 24px; display: flex; gap: 10px; flex-wrap: wrap;">
+      <a class="btn btn-outline-primary" href="{% url 'home' %}#latest-blog-ideas">Back to Latest Blog Ideas</a>
+      <a class="btn btn-primary" href="{% url 'ideas_page' %}">Share Your Idea</a>
+    </div>
+  </section>
+</main>
+{% endblock %}

@@ -6,6 +6,7 @@ urlpatterns = [
     path('', views.PostList.as_view(), name='home'),
     path('post/<slug:slug>/', views.PostDetail.as_view(), name='post_detail'),
     path('ideas/', views.ideas_page, name='ideas_page'),
+    path('ideas/<int:pk>/', views.IdeaDetail.as_view(), name='idea_detail'),
     path('ideas/my/', views.my_ideas_page, name='my_ideas_page'),
     path('ideas/unallocated/', views.unallocated_ideas_page, name='unallocated_ideas_page'),
     path('ideas/<int:idea_id>/edit/', views.edit_idea_page, name='edit_idea_page'),

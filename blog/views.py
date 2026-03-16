@@ -47,6 +47,12 @@ class PostDetail(DetailView):
     slug_url_kwarg = 'slug'
 
 
+class IdeaDetail(DetailView):
+    model = Idea
+    template_name = 'idea_detail.html'
+    context_object_name = 'idea_obj'
+
+
 class AboutPageView(RedirectView):
     permanent = False
 

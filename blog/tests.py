@@ -2,6 +2,7 @@ import json
 
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.urls import reverse
 
 from .models import Idea, UserContactProfile
 
@@ -184,7 +185,7 @@ class IdeaPageTests(TestCase):
 
         share_response = self.client.get('/ideas/')
         self.assertEqual(share_response.status_code, 200)
-        self.assertContains(share_response, 'Visitor ideas are now shown on the home page About section.')
+        self.assertContains(share_response, 'Share your idea with us')
         self.assertNotContains(share_response, own_idea.title)
         self.assertNotContains(share_response, other_idea.title)
 
@@ -228,3 +229,27 @@ class IdeaPageTests(TestCase):
         my_ideas_response = self.client.get('/ideas/my/')
         self.assertEqual(my_ideas_response.status_code, 200)
         self.assertContains(my_ideas_response, claimed_idea.title)
+
+    def test_latest_blog_idea_preview_links_to_full_detail_page(self):
+        idea = Idea.objects.create(
+            owner=None,
+            name='Cafe Owner',
+            email='cafe-owner@example.com',
+            title='',
+            idea=(
+                "I Almost Lost My Business at Starbucks (And Didn't Realize It Until I Got Home). "
+                "I connected to public Wi-Fi and signed into multiple accounts without checking the network details. "
+                "This final phrase should only appear on the detail page."
+            ),
+        )
+
+        home_response = self.client.get('/')
+        self.assertEqual(home_response.status_code, 200)
+        self.assertContains(home_response, reverse('idea_detail', args=[idea.id]))
+        self.assertContains(home_response, 'Read Full Idea')
+        self.assertNotContains(home_response, 'This final phrase should only appear on the detail page.')
+
+        detail_response = self.client.get(reverse('idea_detail', args=[idea.id]))
+        self.assertEqual(detail_response.status_code, 200)
+        self.assertContains(detail_response, 'I Almost Lost My Business at Starbucks')
+        self.assertContains(detail_response, 'This final phrase should only appear on the detail page.')
