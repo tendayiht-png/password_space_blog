@@ -227,8 +227,21 @@ main {
   content: "";
   position: absolute;
   inset: -8%;
-  z-index: -2;
+  z-index: -3;
   background: url("../images/blog_image_1.jpg") center/cover no-repeat;
+  transform: scale(1.08);
+}
+
+.about-motion-video {
+  position: absolute;
+  inset: -8%;
+  width: 116%;
+  height: 116%;
+  z-index: -2;
+  object-fit: cover;
+  pointer-events: none;
+  filter: saturate(1.05) brightness(0.84);
+  transform: scale(1.06);
   animation: about-video-pan 20s ease-in-out infinite alternate;
 }
 
@@ -240,7 +253,7 @@ main {
   background: linear-gradient(180deg, rgba(6, 14, 15, 0.2) 0%, rgba(6, 14, 15, 0.58) 100%);
 }
 
-.about-motion-card > * {
+.about-motion-card > :not(.about-motion-video) {
   position: relative;
   z-index: 1;
 }
@@ -280,6 +293,11 @@ main {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .about-motion-video {
+    display: none;
+    animation: none;
+  }
+
   .about-motion-card::before {
     animation: none;
   }
