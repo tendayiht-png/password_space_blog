@@ -226,13 +226,23 @@ main {
 .about-motion-card::before {
   content: "";
   position: absolute;
-  inset: -8%;
-  z-index: -2;
-  background:
-    linear-gradient(150deg, rgba(9, 20, 22, 0.68), rgba(14, 48, 44, 0.52)),
-    url("../images/blog_image_4.jpg") center/cover no-repeat;
+  inset: -6%;
+  z-index: -3;
+  background: url("../images/blog_image_4.jpg") center/cover no-repeat;
   transform: scale(1.08);
-  animation: about-pan 20s ease-in-out infinite alternate;
+}
+
+.about-motion-video {
+  position: absolute;
+  inset: -8%;
+  width: 116%;
+  height: 116%;
+  z-index: -2;
+  object-fit: cover;
+  pointer-events: none;
+  filter: saturate(1.05) brightness(0.84);
+  transform: scale(1.06);
+  animation: about-video-pan 20s ease-in-out infinite alternate;
 }
 
 .about-motion-card::after {
@@ -241,6 +251,11 @@ main {
   inset: 0;
   z-index: -1;
   background: linear-gradient(180deg, rgba(6, 14, 15, 0.2) 0%, rgba(6, 14, 15, 0.58) 100%);
+}
+
+.about-motion-card > :not(.about-motion-video) {
+  position: relative;
+  z-index: 1;
 }
 
 .about-motion-card h2,
@@ -262,25 +277,25 @@ main {
   color: #ffffff;
 }
 
-@keyframes about-pan {
+@keyframes about-video-pan {
   0% {
     transform: scale(1.09) translate3d(-2.5%, -2%, 0);
-    filter: saturate(1) brightness(0.86);
+    filter: saturate(1.02) brightness(0.82);
   }
   50% {
     transform: scale(1.14) translate3d(1.5%, -1%, 0);
-    filter: saturate(1.08) brightness(0.92);
+    filter: saturate(1.1) brightness(0.9);
   }
   100% {
     transform: scale(1.1) translate3d(2.2%, 2.2%, 0);
-    filter: saturate(1.03) brightness(0.88);
+    filter: saturate(1.05) brightness(0.84);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .about-motion-card::before {
+  .about-motion-video {
+    display: none;
     animation: none;
-    transform: scale(1.08);
   }
 }
 
