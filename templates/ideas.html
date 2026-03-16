@@ -91,41 +91,9 @@
     </form>
 
     <hr class="my-4">
-
-    <h2 style="margin-top: 12px;">Ideas from our visitors</h2>
-    <p class="mb-3">Browse suggestions submitted by the community.</p>
-
-    {% if community_ideas %}
-      <div class="row g-3">
-        {% for community_idea in community_ideas %}
-          <div class="col-12">
-            <article class="card p-3" style="border: 1px solid rgba(0,0,0,0.08);">
-              <h3 style="font-size: 1.15rem; margin-bottom: 8px;">
-                {{ community_idea.title|default:"Untitled idea" }}
-              </h3>
-              <p style="margin-bottom: 10px;">{{ community_idea.idea|linebreaksbr }}</p>
-              <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 12px;">
-                Submitted by {{ community_idea.name }} on {{ community_idea.created_on|date:"M d, Y H:i" }}
-              </p>
-
-              {% if user.is_authenticated and community_idea.owner_id == user.id %}
-                <div class="d-flex gap-2">
-                  <a class="btn btn-sm btn-outline-primary" href="{% url 'edit_idea_page' community_idea.id %}">Edit</a>
-                  <form method="post" action="{% url 'delete_idea' community_idea.id %}" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this idea?');">
-                      Delete
-                    </button>
-                  </form>
-                </div>
-              {% endif %}
-            </article>
-          </div>
-        {% endfor %}
-      </div>
-    {% else %}
-      <p>No ideas have been submitted yet.</p>
-    {% endif %}
+    <h2 style="margin-top: 12px;">Latest Community Ideas</h2>
+    <p class="mb-3">Visitor ideas are now shown on the home page About section.</p>
+    <a class="btn btn-outline-primary" href="{% url 'home' %}#latest-community-ideas">View Latest Community Ideas</a>
   </section>
 </main>
 {% endblock %}

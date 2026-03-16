@@ -184,13 +184,19 @@ class IdeaPageTests(TestCase):
 
         share_response = self.client.get('/ideas/')
         self.assertEqual(share_response.status_code, 200)
-        self.assertContains(share_response, other_idea.title)
+        self.assertContains(share_response, 'Visitor ideas are now shown on the home page About section.')
         self.assertNotContains(share_response, own_idea.title)
+        self.assertNotContains(share_response, other_idea.title)
 
         my_ideas_response = self.client.get('/ideas/my/')
         self.assertEqual(my_ideas_response.status_code, 200)
         self.assertContains(my_ideas_response, own_idea.title)
         self.assertNotContains(my_ideas_response, other_idea.title)
+
+        home_response = self.client.get('/')
+        self.assertEqual(home_response.status_code, 200)
+        self.assertContains(home_response, own_idea.title)
+        self.assertContains(home_response, other_idea.title)
 
     def test_share_ideas_claims_matching_anonymous_submissions_for_logged_in_user(self):
         user = User.objects.create_user(
@@ -211,6 +217,10 @@ class IdeaPageTests(TestCase):
         share_response = self.client.get('/ideas/')
         self.assertEqual(share_response.status_code, 200)
         self.assertNotContains(share_response, claimed_idea.title)
+
+        home_response = self.client.get('/')
+        self.assertEqual(home_response.status_code, 200)
+        self.assertContains(home_response, claimed_idea.title)
 
         claimed_idea.refresh_from_db()
         self.assertEqual(claimed_idea.owner, user)

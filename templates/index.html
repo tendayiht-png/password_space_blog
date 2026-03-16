@@ -72,7 +72,7 @@
     <a class="btn btn-primary" href="{% url 'ideas_page' %}">Submit Your Idea</a>
   </section>
 
-  <h2 class="section-title" style="margin-top: 28px;">Latest Community Ideas</h2>
+  <h2 id="latest-community-ideas" class="section-title" style="margin-top: 28px;">Latest Community Ideas</h2>
   {% if recent_ideas %}
     <section class="grid">
       {% for idea in recent_ideas %}
