@@ -65,7 +65,7 @@ class HowToPageView(TemplateView):
             'and protect them from unauthorized access.'
         )
         context['time_estimate'] = 'Estimated Time: 5-8 min'
-        context['difficulty'] = 'Difficulty: Beginner'
+        context['difficulty'] = 'Difficulty: High'
         context['outcome'] = 'Outcome: Account protected'
         return context
 
