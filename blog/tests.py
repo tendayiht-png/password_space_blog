@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import Idea, UserContactProfile
+from .models import DRAFT, PUBLISHED, Idea, Post, UserContactProfile
 
 
 class RegistrationApiTests(TestCase):
@@ -257,3 +257,128 @@ class IdeaPageTests(TestCase):
         self.assertEqual(detail_response.status_code, 200)
         self.assertContains(detail_response, 'I Almost Lost My Business at Starbucks')
         self.assertContains(detail_response, 'This final phrase should only appear on the detail page.')
+
+
+class PostPublishingAndEditorTests(TestCase):
+    def setUp(self):
+        self.author = User.objects.create_user(
+            username='post_author',
+            email='author@example.com',
+            password='VeryStr0ng!Password2026',
+        )
+        self.staff_user = User.objects.create_user(
+            username='staff_editor',
+            email='staff@example.com',
+            password='VeryStr0ng!Password2026',
+            is_staff=True,
+        )
+
+    def test_home_only_lists_published_posts(self):
+        Post.objects.create(
+            title='Published article',
+            slug='published-article',
+            author=self.author,
+            content='<p>Visible content</p>',
+            status=PUBLISHED,
+        )
+        Post.objects.create(
+            title='Draft article',
+            slug='draft-article',
+            author=self.author,
+            content='<p>Hidden content</p>',
+            status=DRAFT,
+        )
+
+        response = self.client.get('/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Published article')
+        self.assertNotContains(response, 'Draft article')
+
+    def test_non_staff_cannot_access_draft_detail(self):
+        draft_post = Post.objects.create(
+            title='Private draft',
+            slug='private-draft',
+            author=self.author,
+            content='<p>Draft body</p>',
+            status=DRAFT,
+        )
+
+        response = self.client.get(reverse('post_detail', args=[draft_post.slug]))
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_staff_can_access_draft_detail(self):
+        draft_post = Post.objects.create(
+            title='Staff-visible draft',
+            slug='staff-visible-draft',
+            author=self.author,
+            content='<p>Draft body</p>',
+            status=DRAFT,
+        )
+        self.client.force_login(self.staff_user)
+
+        response = self.client.get(reverse('post_detail', args=[draft_post.slug]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Staff-visible draft')
+
+    def test_post_sanitization_removes_script_tags(self):
+        post = Post.objects.create(
+            title='Sanitized article',
+            slug='sanitized-article',
+            author=self.author,
+            content='<h1>Allowed</h1><script>alert("xss")</script><strong>Safe</strong>',
+            status=PUBLISHED,
+        )
+
+        self.assertNotIn('<script', post.content.lower())
+        self.assertIn('<h1>Allowed</h1>', post.content)
+        self.assertIn('<strong>Safe</strong>', post.content)
+
+    def test_staff_editor_creates_draft_post(self):
+        self.client.force_login(self.staff_user)
+
+        response = self.client.post(
+            reverse('post_editor_page'),
+            {
+                'title': 'Editor draft',
+                'slug': '',
+                'excerpt': 'Excerpt text',
+                'content': '<p>Draft content</p><script>alert(1)</script>',
+                'status': str(DRAFT),
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        created = Post.objects.get(title='Editor draft')
+        self.assertEqual(created.status, DRAFT)
+        self.assertEqual(created.author, self.staff_user)
+        self.assertNotIn('<script', created.content.lower())
+
+    def test_authenticated_non_staff_can_access_editor(self):
+        self.client.force_login(self.author)
+
+        response = self.client.get(reverse('post_editor_page'))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_authenticated_non_staff_can_create_draft_post(self):
+        self.client.force_login(self.author)
+
+        response = self.client.post(
+            reverse('post_editor_page'),
+            {
+                'title': 'Author draft',
+                'slug': '',
+                'excerpt': 'Author excerpt',
+                'content': '<p>Author draft content</p><script>alert(1)</script>',
+                'status': str(DRAFT),
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        created = Post.objects.get(title='Author draft')
+        self.assertEqual(created.status, DRAFT)
+        self.assertEqual(created.author, self.author)
+        self.assertNotIn('<script', created.content.lower())

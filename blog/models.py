@@ -1,7 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-STATUS = ((0, "Draft"), (1, "Published"))
+from .sanitizers import sanitize_excerpt_text, sanitize_post_html
+
+DRAFT = 0
+PUBLISHED = 1
+STATUS = ((DRAFT, "Draft"), (PUBLISHED, "Published"))
 
 
 class Post(models.Model):
@@ -18,6 +22,11 @@ class Post(models.Model):
 
     class Meta:
         ordering = ["-created_on"]
+
+    def save(self, *args, **kwargs):
+        self.content = sanitize_post_html(self.content)
+        self.excerpt = sanitize_excerpt_text(self.excerpt)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.title} | written by {self.author}"

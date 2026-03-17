@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container py-4" style="max-width: 960px;">
+  <section class="hero-card reveal" style="margin-top: 20px;">
+    <span class="badge">Editor</span>
+    <h1 style="margin-top: 12px;">Create a Blog Post</h1>
+    <p style="color: var(--muted); margin-bottom: 24px;">
+      Use the toolbar for H1/H2, bold, italics, bullets, and links. Choose <strong>Draft</strong> to save without publishing.
+    </p>
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger" role="alert">
+        {% for error in form.non_field_errors %}
+          <div>{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+        {{ form.title }}
+        {% for error in form.title.errors %}
+          <div class="text-danger mt-1">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3">
+        <label for="{{ form.slug.id_for_label }}" class="form-label">Slug (optional)</label>
+        {{ form.slug }}
+        {% for error in form.slug.errors %}
+          <div class="text-danger mt-1">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3">
+        <label for="{{ form.excerpt.id_for_label }}" class="form-label">Excerpt</label>
+        {{ form.excerpt }}
+        {% for error in form.excerpt.errors %}
+          <div class="text-danger mt-1">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="d-flex flex-wrap gap-2 mb-2" role="toolbar" aria-label="Post formatting toolbar">
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-format="h1">H1</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-format="h2">H2</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-format="bold"><strong>Bold</strong></button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-format="italic"><em>Italics</em></button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-format="bullets">Bullets</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-format="link">Hyperlink</button>
+        <button type="button" class="btn btn-outline-primary btn-sm" id="previewToggle">Preview</button>
+      </div>
+
+      <div id="editorPane" class="mb-3">
+        <label for="{{ form.content.id_for_label }}" class="form-label">Content</label>
+        {{ form.content }}
+        {% for error in form.content.errors %}
+          <div class="text-danger mt-1">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div id="previewPane" class="card p-3 mb-3 d-none" aria-live="polite">
+        <h2 id="previewTitle" style="margin-bottom: 8px;"></h2>
+        <p id="previewExcerpt" style="margin-bottom: 18px; color: var(--muted);"></p>
+        <div id="previewContent"></div>
+      </div>
+
+      <div class="mb-4">
+        <label for="{{ form.status.id_for_label }}" class="form-label">Publishing Status</label>
+        {{ form.status }}
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <button type="submit" class="btn btn-primary">Save Post</button>
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary">Cancel</a>
+      </div>
+    </form>
+  </section>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const contentField = document.getElementById('id_content');
+  const titleField = document.getElementById('id_title');
+  const excerptField = document.getElementById('id_excerpt');
+  const toolbar = document.querySelector('[role="toolbar"]');
+  const previewToggle = document.getElementById('previewToggle');
+  const editorPane = document.getElementById('editorPane');
+  const previewPane = document.getElementById('previewPane');
+  const previewTitle = document.getElementById('previewTitle');
+  const previewExcerpt = document.getElementById('previewExcerpt');
+  const previewContent = document.getElementById('previewContent');
+
+  if (!contentField || !toolbar || !previewToggle) {
+    return;
+  }
+
+  const allowedTags = new Set([
+    'A', 'B', 'BR', 'CODE', 'EM', 'H1', 'H2', 'H3', 'I', 'LI', 'OL', 'P', 'PRE',
+    'STRONG', 'TABLE', 'TBODY', 'TD', 'TH', 'THEAD', 'TR', 'UL'
+  ]);
+
+  function isSafeHref(href) {
+    if (!href) {
+      return false;
+    }
+
+    const value = href.trim();
+    if (!value || value.startsWith('//')) {
+      return false;
+    }
+
+    const hasScheme = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(value);
+    if (!hasScheme) {
+      return true;
+    }
+
+    const lowerValue = value.toLowerCase();
+    return lowerValue.startsWith('http:') || lowerValue.startsWith('https:') || lowerValue.startsWith('mailto:');
+  }
+
+  function sanitizeNode(node, doc) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      return doc.createTextNode(node.textContent || '');
+    }
+
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      return doc.createDocumentFragment();
+    }
+
+    if (node.tagName === 'SCRIPT' || node.tagName === 'STYLE') {
+      return doc.createDocumentFragment();
+    }
+
+    if (!allowedTags.has(node.tagName)) {
+      const fragment = doc.createDocumentFragment();
+      node.childNodes.forEach(function (child) {
+        fragment.appendChild(sanitizeNode(child, doc));
+      });
+      return fragment;
+    }
+
+    const cleanElement = doc.createElement(node.tagName.toLowerCase());
+
+    if (node.tagName === 'A') {
+      const href = node.getAttribute('href');
+      if (isSafeHref(href)) {
+        cleanElement.setAttribute('href', href.trim());
+      }
+
+      const title = node.getAttribute('title');
+      if (title) {
+        cleanElement.setAttribute('title', title);
+      }
+
+      const target = node.getAttribute('target');
+      if (target === '_blank' || target === '_self') {
+        cleanElement.setAttribute('target', target);
+      }
+
+      if (cleanElement.getAttribute('target') === '_blank') {
+        cleanElement.setAttribute('rel', 'noopener noreferrer');
+      }
+    }
+
+    node.childNodes.forEach(function (child) {
+      cleanElement.appendChild(sanitizeNode(child, doc));
+    });
+
+    return cleanElement;
+  }
+
+  function sanitizeForPreview(rawHtml) {
+    const parser = new DOMParser();
+    const parsed = parser.parseFromString(rawHtml || '', 'text/html');
+    const outputDoc = document.implementation.createHTMLDocument('preview');
+    const wrapper = outputDoc.createElement('div');
+
+    parsed.body.childNodes.forEach(function (child) {
+      wrapper.appendChild(sanitizeNode(child, outputDoc));
+    });
+
+    return wrapper.innerHTML;
+  }
+
+  function replaceSelection(replacement) {
+    const start = contentField.selectionStart;
+    const end = contentField.selectionEnd;
+    const value = contentField.value;
+    contentField.value = value.slice(0, start) + replacement + value.slice(end);
+    const newCursorPos = start + replacement.length;
+    contentField.setSelectionRange(newCursorPos, newCursorPos);
+    contentField.focus();
+  }
+
+  function wrapSelection(startTag, endTag, fallbackText) {
+    const start = contentField.selectionStart;
+    const end = contentField.selectionEnd;
+    const selected = contentField.value.slice(start, end) || fallbackText;
+    replaceSelection(startTag + selected + endTag);
+  }
+
+  function applyBullets() {
+    const start = contentField.selectionStart;
+    const end = contentField.selectionEnd;
+    const selectedText = (contentField.value.slice(start, end) || 'List item').trim();
+    const lines = selectedText
+      .split(/\r?\n/)
+      .map(function (line) { return line.trim(); })
+      .filter(Boolean);
+
+    const listItems = lines.map(function (line) { return '  <li>' + line + '</li>'; }).join('\n');
+    replaceSelection('<ul>\n' + listItems + '\n</ul>');
+  }
+
+  function applyLink() {
+    const start = contentField.selectionStart;
+    const end = contentField.selectionEnd;
+    const selectedText = contentField.value.slice(start, end) || 'Link text';
+    const url = window.prompt('Enter URL (https://..., http://..., mailto:...)', 'https://');
+    if (!url) {
+      return;
+    }
+
+    const safeUrl = url.replace(/"/g, '&quot;').trim();
+    const html = '<a href="' + safeUrl + '" target="_blank" rel="noopener noreferrer">' + selectedText + '</a>';
+    replaceSelection(html);
+  }
+
+  function renderPreview() {
+    previewTitle.textContent = titleField.value || 'Untitled post';
+    previewExcerpt.textContent = excerptField.value || '';
+    previewContent.innerHTML = sanitizeForPreview(contentField.value);
+  }
+
+  toolbar.addEventListener('click', function (event) {
+    const button = event.target.closest('button[data-format]');
+    if (!button) {
+      return;
+    }
+
+    const action = button.getAttribute('data-format');
+    if (action === 'h1') {
+      wrapSelection('<h1>', '</h1>', 'Heading 1');
+      return;
+    }
+
+    if (action === 'h2') {
+      wrapSelection('<h2>', '</h2>', 'Heading 2');
+      return;
+    }
+
+    if (action === 'bold') {
+      wrapSelection('<strong>', '</strong>', 'bold text');
+      return;
+    }
+
+    if (action === 'italic') {
+      wrapSelection('<em>', '</em>', 'italic text');
+      return;
+    }
+
+    if (action === 'bullets') {
+      applyBullets();
+      return;
+    }
+
+    if (action === 'link') {
+      applyLink();
+    }
+  });
+
+  previewToggle.addEventListener('click', function () {
+    const isPreviewVisible = !previewPane.classList.contains('d-none');
+    if (isPreviewVisible) {
+      previewPane.classList.add('d-none');
+      editorPane.classList.remove('d-none');
+      previewToggle.textContent = 'Preview';
+      return;
+    }
+
+    renderPreview();
+    editorPane.classList.add('d-none');
+    previewPane.classList.remove('d-none');
+    previewToggle.textContent = 'Back to Editor';
+  });
+});
+</script>
+{% endblock %}

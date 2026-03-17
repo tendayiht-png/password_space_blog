@@ -24,14 +24,15 @@ from django.views.decorators.http import require_http_methods
 from django.views.generic import DetailView, ListView, RedirectView, TemplateView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Idea, Post, UserContactProfile
+from .forms import PostEditorForm
+from .models import Idea, PUBLISHED, Post, UserContactProfile
 
 
 class PostList(ListView):
     model = Post
     template_name = 'index.html'
     context_object_name = 'post_list'
-    queryset = Post.objects.all().order_by('-created_on')
+    queryset = Post.objects.filter(status=PUBLISHED).select_related('author').order_by('-created_on')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -45,6 +46,32 @@ class PostDetail(DetailView):
     context_object_name = 'post'
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
+
+    def get_queryset(self):
+        base_queryset = Post.objects.select_related('author')
+        if self.request.user.is_staff:
+            return base_queryset
+        return base_queryset.filter(status=PUBLISHED)
+
+
+@login_required(login_url='/login/')
+@require_http_methods(['GET', 'POST'])
+def post_editor_page(request):
+    form = PostEditorForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        post = form.save(commit=False)
+        post.author = request.user
+        post.save()
+
+        if post.status == PUBLISHED:
+            messages.success(request, 'Post published successfully.')
+            return redirect('post_detail', slug=post.slug)
+
+        messages.success(request, 'Draft saved successfully.')
+        return redirect('post_editor_page')
+
+    return render(request, 'post_editor.html', {'form': form})
 
 
 class IdeaDetail(DetailView):
