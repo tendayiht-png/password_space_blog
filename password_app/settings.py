@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 import dj_database_url
 
@@ -167,10 +168,26 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
+RUNNING_TESTS = any(arg == 'test' or 'pytest' in arg for arg in sys.argv)
+
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+STATICFILES_BACKEND = (
+    'django.contrib.staticfiles.storage.StaticFilesStorage'
+    if DEBUG or RUNNING_TESTS
+    else 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+)
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': STATICFILES_BACKEND,
+    },
+}
 
 # Email configuration — uses SMTP in production, console backend locally.
 EMAIL_BACKEND = os.environ.get(
