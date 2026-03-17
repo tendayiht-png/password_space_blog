@@ -16,6 +16,11 @@
         Signed in as <strong>{{ user.username }}</strong>. You can manage your submissions on
         <a href="{% url 'my_ideas_page' %}">My Ideas</a>.
       </p>
+      {% if prefilled_from_account %}
+        <p class="field-help mb-3">
+          Name and email were prefilled from your account details. You can adjust them before submitting.
+        </p>
+      {% endif %}
     {% else %}
       <p class="mb-3">
         <a href="{% url 'login_page' %}">Log in</a> to edit and delete your own ideas later.

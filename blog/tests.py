@@ -1,6 +1,7 @@
 import json
 
 from django.contrib.auth.models import User
+from django.core import mail
 from django.test import TestCase
 from django.urls import reverse
 
@@ -103,6 +104,38 @@ class RegistrationApiTests(TestCase):
         profile = UserContactProfile.objects.get(user=created)
         self.assertEqual(profile.telephone, '+447700900300')
 
+    def test_registration_returns_confirmation_outcome_details(self):
+        password = 'VeryStr0ng!Password2026'
+
+        response = self.client.post(
+            '/API/register',
+            data=json.dumps(
+                {
+                    'username': 'outcome_user',
+                    'email': 'outcome_user@example.com',
+                    'telephone': '+447700900311',
+                    'password': password,
+                    'confirm_password': password,
+                }
+            ),
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 201)
+        data = response.json()
+        self.assertTrue(data['ok'])
+        self.assertIn('outcome', data)
+        self.assertTrue(data['outcome']['account_ready'])
+        self.assertEqual(
+            data['outcome']['confirmation_email_sent'],
+            data['confirmation_email_sent'],
+        )
+        self.assertTrue(data['outcome']['confirmation_message'])
+        self.assertIn('ready', data['message'].lower())
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, ['outcome_user@example.com'])
+
 
 class LoginApiTests(TestCase):
     def test_login_rejects_mismatched_telephone(self):
@@ -155,6 +188,41 @@ class LoginApiTests(TestCase):
 
 
 class IdeaPageTests(TestCase):
+    def test_idea_form_prefills_from_authenticated_account(self):
+        user = User.objects.create_user(
+            username='prefill_user',
+            first_name='Grace',
+            last_name='Hopper',
+            email='grace.hopper@example.com',
+            password='VeryStr0ng!Password2026',
+        )
+        self.client.force_login(user)
+
+        response = self.client.get('/ideas/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['form_data']['name'], 'Grace Hopper')
+        self.assertEqual(response.context['form_data']['email'], 'grace.hopper@example.com')
+        self.assertTrue(response.context['prefilled_from_account'])
+        self.assertContains(response, 'Name and email were prefilled from your account details.')
+
+    def test_idea_form_prefills_email_from_username_when_email_blank(self):
+        user = User.objects.create_user(
+            username='account.alias@example.com',
+            first_name='Account',
+            last_name='Alias',
+            email='',
+            password='VeryStr0ng!Password2026',
+        )
+        self.client.force_login(user)
+
+        response = self.client.get('/ideas/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['form_data']['name'], 'Account Alias')
+        self.assertEqual(response.context['form_data']['email'], 'account.alias@example.com')
+        self.assertTrue(response.context['prefilled_from_account'])
+
     def test_logged_in_user_ideas_only_show_in_my_ideas(self):
         user = User.objects.create_user(
             username='idea_owner',

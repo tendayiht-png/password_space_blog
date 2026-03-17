@@ -134,18 +134,29 @@
       resultMessage.className = "form-result";
     }
 
-    function showRegistrationSuccess(message, loginUrl) {
+    function showRegistrationSuccess(message, loginUrl, outcome) {
       resultMessage.className = "form-result success";
       resultMessage.textContent = "";
 
       const messageText = document.createElement("span");
       messageText.textContent = message;
+      messageText.style.display = "block";
       resultMessage.appendChild(messageText);
+
+      if (outcome && outcome.confirmation_message) {
+        const outcomeText = document.createElement("span");
+        outcomeText.textContent = outcome.confirmation_message;
+        outcomeText.style.display = "block";
+        outcomeText.style.fontWeight = "600";
+        outcomeText.style.marginTop = "4px";
+        resultMessage.appendChild(outcomeText);
+      }
 
       const loginLink = document.createElement("a");
       loginLink.href = loginUrl || "/login/";
       loginLink.textContent = "Go to Login";
-      loginLink.style.marginLeft = "8px";
+      loginLink.style.display = "inline-block";
+      loginLink.style.marginTop = "8px";
       loginLink.style.fontWeight = "800";
       loginLink.style.textDecoration = "underline";
       loginLink.style.color = "inherit";
@@ -297,7 +308,8 @@
         if (response.ok && data.ok) {
           showRegistrationSuccess(
             data.message || "Registration successful. Your account is ready.",
-            data.login_url
+            data.login_url,
+            data.outcome || null
           );
           form.reset();
           clearPasswordFields(false);

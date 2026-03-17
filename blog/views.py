@@ -123,6 +123,41 @@ def _account_contact_email(user):
     return ''
 
 
+def _account_display_name(user):
+    """Return the best display name available for prefilled form fields."""
+    if not user or not user.is_authenticated:
+        return ''
+
+    full_name = (user.get_full_name() or '').strip()
+    if full_name:
+        return full_name
+
+    return (user.username or '').strip()
+
+
+def _idea_form_prefill_data(user):
+    """Build prefill values for the idea form from account details and recent submissions."""
+    if not user or not user.is_authenticated:
+        return {'name': '', 'email': '', 'prefilled_from_account': False}
+
+    name = _account_display_name(user)
+    email = _account_contact_email(user)
+
+    if not name or not email:
+        recent_idea = Idea.objects.filter(owner=user).only('name', 'email').first()
+        if recent_idea:
+            if not name:
+                name = (recent_idea.name or '').strip()
+            if not email:
+                email = (recent_idea.email or '').strip()
+
+    return {
+        'name': name,
+        'email': email,
+        'prefilled_from_account': bool(name or email),
+    }
+
+
 def _claim_unowned_ideas_for_user(user):
     """Attach previously anonymous ideas to the authenticated account when possible."""
     contact_email = _account_contact_email(user)
@@ -328,9 +363,10 @@ def _move_user_ideas_to_unallocated(user):
 
 def ideas_page(request):
     """Render and handle the user ideas submission form."""
+    account_prefill = _idea_form_prefill_data(request.user)
     form_data = {
-        'name': request.user.get_full_name() or request.user.username if request.user.is_authenticated else '',
-        'email': request.user.email if request.user.is_authenticated else '',
+        'name': account_prefill['name'],
+        'email': account_prefill['email'],
         'title': '',
         'idea': '',
     }
@@ -351,6 +387,7 @@ def ideas_page(request):
                     'form_data': form_data,
                     'errors': errors,
                     'success_message': success_message,
+                    'prefilled_from_account': account_prefill['prefilled_from_account'],
                 },
             )
 
@@ -398,6 +435,7 @@ def ideas_page(request):
             'form_data': form_data,
             'errors': errors,
             'success_message': success_message,
+            'prefilled_from_account': account_prefill['prefilled_from_account'],
         },
     )
 
@@ -562,11 +600,22 @@ def register_api(request):
     if confirmation_email_sent:
         success_message += ' A confirmation email has been sent.'
 
+    confirmation_outcome = (
+        'Confirmation email sent. Please check your inbox.'
+        if confirmation_email_sent
+        else 'Account created successfully, but confirmation email delivery could not be verified.'
+    )
+
     return JsonResponse(
         {
             'ok': True,
             'message': success_message,
             'confirmation_email_sent': confirmation_email_sent,
+            'outcome': {
+                'account_ready': True,
+                'confirmation_email_sent': confirmation_email_sent,
+                'confirmation_message': confirmation_outcome,
+            },
             'login_url': reverse('login_page'),
             'user': {
                 'id': user.id,
