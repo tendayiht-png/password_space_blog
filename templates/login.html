@@ -22,18 +22,27 @@
 
     <!-- Login form panel -->
     <article class="hero-card">
-      <form id="loginForm" class="auth-form">
+      <form id="loginForm" class="auth-form" autocomplete="off">
         {% csrf_token %}
+
+        <div style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;" aria-hidden="true">
+          <label for="decoy_username">Username</label>
+          <input type="text" id="decoy_username" name="decoy_username" autocomplete="username" tabindex="-1">
+          <label for="decoy_password">Password</label>
+          <input type="password" id="decoy_password" name="decoy_password" autocomplete="current-password" tabindex="-1">
+        </div>
         
         <div class="field">
           <label for="username">Username</label>
           <input 
             type="text" 
             id="username" 
-            name="username"
+            name="login_username"
             placeholder="Enter your username"
             required
             autocomplete="off"
+            readonly
+            onfocus="this.removeAttribute('readonly');"
           >
           <p id="usernameError" class="field-error" aria-live="polite"></p>
         </div>
@@ -43,10 +52,12 @@
           <input 
             type="email" 
             id="email" 
-            name="email"
+            name="login_email"
             placeholder="Enter your email"
             required
             autocomplete="off"
+            readonly
+            onfocus="this.removeAttribute('readonly');"
           >
           <p id="emailError" class="field-error" aria-live="polite"></p>
         </div>
@@ -56,10 +67,12 @@
           <input
             type="tel"
             id="telephone"
-            name="telephone"
+            name="login_telephone"
             placeholder="Enter your telephone number"
             required
             autocomplete="off"
+            readonly
+            onfocus="this.removeAttribute('readonly');"
           >
           <p id="telephoneError" class="field-error" aria-live="polite"></p>
         </div>
@@ -70,10 +83,12 @@
             <input 
               type="password" 
               id="password" 
-              name="password"
+              name="login_password"
               placeholder="Enter your password"
               required
-              autocomplete="off"
+              autocomplete="new-password"
+              readonly
+              onfocus="this.removeAttribute('readonly');"
               style="padding-right: 44px;"
             >
             <button
@@ -135,6 +150,14 @@ document.addEventListener('DOMContentLoaded', function() {
   const emailError = document.getElementById('emailError');
   const telephoneError = document.getElementById('telephoneError');
   const passwordError = document.getElementById('passwordError');
+
+  // Defensively clear browser-injected autofill values on initial render.
+  window.setTimeout(function () {
+    usernameInput.value = '';
+    emailInput.value = '';
+    telephoneInput.value = '';
+    passwordInput.value = '';
+  }, 50);
 
   // Clear errors on input
   usernameInput.addEventListener('input', () => usernameError.textContent = '');
