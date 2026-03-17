@@ -82,6 +82,13 @@
 
       <div class="mb-3">
         <label for="idea" class="form-label">Your idea</label>
+        <div class="d-flex flex-wrap gap-2 mb-2" role="toolbar" aria-label="Idea formatting toolbar">
+          <button type="button" class="btn btn-outline-secondary btn-sm" data-idea-format="heading">Heading</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" data-idea-format="bold"><strong>Bold</strong></button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" data-idea-format="italic"><em>Italics</em></button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" data-idea-format="bullets">Bullets</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" data-idea-format="link">Link</button>
+        </div>
         <textarea
           id="idea"
           name="idea"
@@ -89,6 +96,7 @@
           rows="6"
           required
         >{{ form_data.idea }}</textarea>
+        <p class="field-help mt-2 mb-0">Tip: use the toolbar to quickly format your idea content before submitting.</p>
         {% if errors.idea %}<div class="text-danger mt-1">{{ errors.idea }}</div>{% endif %}
       </div>
 
@@ -97,4 +105,89 @@
 
     </section>
 </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const ideaField = document.getElementById('idea');
+  const toolbar = document.querySelector('[role="toolbar"]');
+
+  if (!ideaField || !toolbar) {
+    return;
+  }
+
+  function replaceSelection(replacement) {
+    const start = ideaField.selectionStart;
+    const end = ideaField.selectionEnd;
+    const value = ideaField.value;
+    ideaField.value = value.slice(0, start) + replacement + value.slice(end);
+    const cursor = start + replacement.length;
+    ideaField.setSelectionRange(cursor, cursor);
+    ideaField.focus();
+  }
+
+  function wrapSelection(prefix, suffix, fallbackText) {
+    const start = ideaField.selectionStart;
+    const end = ideaField.selectionEnd;
+    const selected = ideaField.value.slice(start, end) || fallbackText;
+    replaceSelection(prefix + selected + suffix);
+  }
+
+  function lineSelectionTransform(transformLine) {
+    const start = ideaField.selectionStart;
+    const end = ideaField.selectionEnd;
+    const selected = ideaField.value.slice(start, end) || 'List item';
+    const transformed = selected
+      .split(/\r?\n/)
+      .filter(function (line) { return line.trim().length > 0; })
+      .map(transformLine)
+      .join('\n');
+
+    replaceSelection(transformed || transformLine('List item'));
+  }
+
+  function insertLink() {
+    const start = ideaField.selectionStart;
+    const end = ideaField.selectionEnd;
+    const selected = ideaField.value.slice(start, end) || 'link text';
+    const url = window.prompt('Enter URL (https://...)', 'https://');
+    if (!url) {
+      return;
+    }
+
+    replaceSelection('[' + selected + '](' + url.trim() + ')');
+  }
+
+  toolbar.addEventListener('click', function (event) {
+    const button = event.target.closest('button[data-idea-format]');
+    if (!button) {
+      return;
+    }
+
+    const action = button.getAttribute('data-idea-format');
+    if (action === 'heading') {
+      wrapSelection('## ', '', 'Idea heading');
+      return;
+    }
+
+    if (action === 'bold') {
+      wrapSelection('**', '**', 'important text');
+      return;
+    }
+
+    if (action === 'italic') {
+      wrapSelection('*', '*', 'emphasis');
+      return;
+    }
+
+    if (action === 'bullets') {
+      lineSelectionTransform(function (line) { return '- ' + line.trim(); });
+      return;
+    }
+
+    if (action === 'link') {
+      insertLink();
+    }
+  });
+});
+</script>
 {% endblock %}
