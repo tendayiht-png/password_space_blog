@@ -25,36 +25,28 @@ The platform includes:
 
 ## User Stories
 
-### Visitor Stories
+### User Stories
 
-- As a visitor, I want to read recent cybersecurity articles from the home page so that I can improve my online safety quickly.
-- As a visitor, I want to open full article pages so that I can read complete guidance and examples.
-- As a visitor, I want to view a 2FA setup guide so that I can secure my most important accounts.
-- As a visitor, I want to submit an idea from the Share Ideas page so that I can influence future blog topics.
-- As a visitor, I want long ideas previewed in a shortened format on the home page so that cards remain easy to scan.
-- As a visitor, I want to click from a preview card to a full idea page so that I can read the complete submission.
-
-### Authenticated User Stories
-
-- As an authenticated user, I want to register and receive a confirmation outcome so that I know my account is ready.
-- As an authenticated user, I want to log in using my validated identity details so that access is secure.
-- As an authenticated user, I want idea form fields to prefill from my account when possible so that submission is faster.
-- As an authenticated user, I want my own ideas listed in My Ideas so that I can manage my submissions in one place.
-- As an authenticated user, I want date-range and preset filters in My Ideas so that I can find specific submissions.
-- As an authenticated user, I want to edit or delete only my own ideas so that I stay in control of my content.
-- As an authenticated user, I want matching previously anonymous ideas to be linked to my account so that my submission history stays complete.
+- As a user, I want to read recent cybersecurity articles from the home page so that I can improve my online safety quickly.
+- As a user, I want to open full article pages so that I can read complete guidance and examples.
+- As a user, I want to view a 2FA setup guide so that I can secure my most important accounts.
+- As a user, I want to submit an idea from the Share Ideas page so that I can influence future blog topics.
+- As a user, I want long ideas previewed in a shortened format on the home page so that cards remain easy to scan.
+- As a user, I want to click from a preview card to a full idea page so that I can read the complete submission.
+- As a user, I want to register and receive a confirmation outcome so that I know my account is ready.
+- As a user, I want to log in using my validated identity details so that access is secure.
+- As a user, I want idea form fields to prefill from my account when possible so that submission is faster.
+- As a user, I want my own ideas listed in My Ideas so that I can manage my submissions in one place.
+- As a user, I want date-range and preset filters in My Ideas so that I can find specific submissions.
+- As a user, I want to edit or delete only my own ideas so that I stay in control of my content.
+- As a user, I want matching previously anonymous ideas to be linked to my account so that my submission history stays complete.
+- As a user, I want passwords to enforce strong policy (minimum length 12) so that accounts are harder to compromise.
+- As a user, I want secure password-reset flows so that account recovery remains safe.
 
 ### Admin Stories
 
 - As an admin, I want to review unallocated ideas so that no valuable community input is lost.
 - As an admin, I want idea records preserved after account deletion so that historical submissions remain available.
-
-### Security and Platform Stories
-
-- As a user, I want passwords to enforce strong policy (minimum length 12) so that accounts are harder to compromise.
-- As a site owner, I want bot-resistant idea submissions (honeypot) so that low-quality automated spam is reduced.
-- As a site owner, I want idea submission rate limiting so that abuse from a single source is controlled.
-- As a user, I want secure password-reset flows so that account recovery remains safe.
 
 ## Key Routes
 
