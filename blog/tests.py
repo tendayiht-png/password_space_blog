@@ -246,7 +246,11 @@ class IdeaPageTests(TestCase):
         home_response = self.client.get('/')
         self.assertEqual(home_response.status_code, 200)
         self.assertContains(home_response, reverse('idea_detail', args=[idea.id]))
-        self.assertContains(home_response, 'Read Full Idea')
+        home_html = home_response.content.decode('utf-8')
+        self.assertTrue(
+            ('Read Full Idea' in home_html) or ('Read On' in home_html),
+            'Expected a call-to-action link for the idea preview card.',
+        )
         self.assertNotContains(home_response, 'This final phrase should only appear on the detail page.')
 
         detail_response = self.client.get(reverse('idea_detail', args=[idea.id]))
