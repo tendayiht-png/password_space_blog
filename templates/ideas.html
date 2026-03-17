@@ -100,7 +100,49 @@
         {% if errors.idea %}<div class="text-danger mt-1">{{ errors.idea }}</div>{% endif %}
       </div>
 
-      <button type="submit" class="btn btn-primary">Submit Idea</button>
+      <div class="mb-3">
+        <label class="form-label">How would you like to submit your idea?</label>
+        <div style="display: flex; gap: 16px;">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="status"
+              id="status-draft"
+              value="0"
+              {% if form_data.status == 0 %}checked{% endif %}
+            >
+            <label class="form-check-label" for="status-draft">
+              Save as Draft (edit later)
+            </label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="status"
+              id="status-published"
+              value="1"
+              {% if form_data.status == 1 %}checked{% endif %}
+            >
+            <label class="form-check-label" for="status-published">
+              Publish Now (submit for review)
+            </label>
+          </div>
+        </div>
+        <p class="field-help mt-2 mb-0">Drafts let you save and refine your idea. Publishing sends it for admin review immediately.</p>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          onclick="previewIdea()"
+        >
+          Preview
+        </button>
+        <button type="submit" class="btn btn-primary">Submit Idea</button>
+      </div>
     </form>
 
     </section>
@@ -189,5 +231,55 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
+
+function previewIdea() {
+  const form = document.querySelector('form');
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const title = document.getElementById('title').value;
+  const idea = document.getElementById('idea').value;
+  const status = document.querySelector('input[name="status"]:checked').value;
+  
+  if (!name.trim()) {
+    alert('Please enter your name before previewing.');
+    return;
+  }
+  
+  if (!email.trim()) {
+    alert('Please enter your email before previewing.');
+    return;
+  }
+  
+  if (!idea.trim()) {
+    alert('Please enter your idea before previewing.');
+    return;
+  }
+  
+  // Create a temporary form to POST to preview
+  const previewForm = document.createElement('form');
+  previewForm.method = 'POST';
+  previewForm.action = '{% url "ideas_page" %}';
+  
+  const fields = {
+    'name': name,
+    'email': email,
+    'title': title,
+    'idea': idea,
+    'status': status,
+    'action': 'preview',
+    'csrfmiddlewaretoken': document.querySelector('input[name="csrfmiddlewaretoken"]').value
+  };
+  
+  for (const [key, value] of Object.entries(fields)) {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = key;
+    input.value = value;
+    previewForm.appendChild(input);
+  }
+  
+  document.body.appendChild(previewForm);
+  previewForm.submit();
+}
 </script>
 {% endblock %}

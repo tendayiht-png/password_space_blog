@@ -34,11 +34,72 @@
         {% if errors.idea %}<div class="text-danger mt-1">{{ errors.idea }}</div>{% endif %}
       </div>
 
-      <div class="d-flex gap-2">
+      <div class="mb-3">
+        <label class="form-label">Status</label>
+        <div style="display: flex; gap: 16px;">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="status"
+              id="status-draft"
+              value="0"
+              {% if form_data.status == 0 %}checked{% endif %}
+            >
+            <label class="form-check-label" for="status-draft">
+              Draft (not yet published)
+            </label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="status"
+              id="status-published"
+              value="1"
+              {% if form_data.status == 1 %}checked{% endif %}
+            >
+            <label class="form-check-label" for="status-published">
+              Published (visible to admins)
+            </label>
+          </div>
+        </div>
+        <p class="field-help mt-2 mb-0">Drafts can be edited freely. Once published, an admin will review your idea for the blog.</p>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          onclick="previewIdea()"
+        >
+          Preview
+        </button>
         <button type="submit" class="btn btn-primary">Save changes</button>
         <a class="btn btn-secondary" href="{% url 'my_ideas_page' %}">Cancel</a>
       </div>
     </form>
   </section>
 </main>
+
+<script>
+function previewIdea() {
+  const title = document.getElementById('title').value;
+  const idea = document.getElementById('idea').value;
+  const status = document.querySelector('input[name="status"]:checked').value;
+  
+  if (!idea.trim()) {
+    alert('Please enter your idea before previewing.');
+    return;
+  }
+  
+  const url = new URL(window.location.href);
+  url.searchParams.set('preview', 'true');
+  url.searchParams.set('title', title);
+  url.searchParams.set('idea', idea);
+  url.searchParams.set('status', status);
+  
+  window.location.href = url.toString();
+}
+</script>
 {% endblock %}

@@ -25,7 +25,7 @@ from django.views.generic import DetailView, ListView, RedirectView, TemplateVie
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .forms import PostEditorForm
-from .models import Idea, PUBLISHED, Post, UserContactProfile
+from .models import Idea, PUBLISHED, Post, UserContactProfile, DRAFT
 
 
 class PostList(ListView):
@@ -232,12 +232,28 @@ def edit_idea_page(request, idea_id):
     form_data = {
         'title': idea_obj.title,
         'idea': idea_obj.idea,
+        'status': idea_obj.status,
     }
+
+    # Handle preview request
+    if request.method == 'GET' and request.GET.get('preview') == 'true':
+        form_data['title'] = request.GET.get('title', idea_obj.title).strip()
+        form_data['idea'] = request.GET.get('idea', idea_obj.idea).strip()
+        return render(
+            request,
+            'idea_preview.html',
+            {
+                'form_data': form_data,
+                'is_preview': True,
+                'idea_obj': idea_obj,
+            },
+        )
 
     if request.method == 'POST':
         form_data = {
             'title': request.POST.get('title', '').strip(),
             'idea': request.POST.get('idea', '').strip(),
+            'status': int(request.POST.get('status', DRAFT)),
         }
 
         if not form_data['idea']:
@@ -246,8 +262,16 @@ def edit_idea_page(request, idea_id):
         if not errors:
             idea_obj.title = form_data['title']
             idea_obj.idea = form_data['idea']
-            idea_obj.save(update_fields=['title', 'idea'])
-            messages.success(request, 'Your idea was updated successfully.')
+            idea_obj.status = form_data['status']
+            idea_obj.save(update_fields=['title', 'idea', 'status'])
+            
+            if form_data['status'] == PUBLISHED:
+                messages.success(request, 'Your idea was published successfully.')
+                # Send notification email when idea is published
+                _send_idea_notification_email(idea_obj)
+            else:
+                messages.success(request, 'Your draft was saved successfully.')
+            
             return redirect('my_ideas_page')
 
     return render(
@@ -369,12 +393,35 @@ def ideas_page(request):
         'email': account_prefill['email'],
         'title': '',
         'idea': '',
+        'status': DRAFT,
     }
     errors = {}
     success_message = ''
+    is_preview = False
 
     if request.user.is_authenticated:
         _claim_unowned_ideas_for_user(request.user)
+
+    # Handle preview request
+    if request.method == 'POST' and request.POST.get('action') == 'preview':
+        form_data = {
+            'name': request.POST.get('name', '').strip(),
+            'email': request.POST.get('email', '').strip(),
+            'title': request.POST.get('title', '').strip(),
+            'idea': request.POST.get('idea', '').strip(),
+            'status': int(request.POST.get('status', DRAFT)),
+        }
+        is_preview = True
+        
+        return render(
+            request,
+            'idea_preview.html',
+            {
+                'form_data': form_data,
+                'is_preview': True,
+                'is_new_submission': True,
+            },
+        )
 
     if request.method == 'POST':
         # Hidden honeypot field catches basic form bots.
@@ -397,6 +444,7 @@ def ideas_page(request):
             'email': request.POST.get('email', '').strip(),
             'title': request.POST.get('title', '').strip(),
             'idea': request.POST.get('idea', '').strip(),
+            'status': int(request.POST.get('status', DRAFT)),
         }
 
         if not form_data['name']:
@@ -421,11 +469,17 @@ def ideas_page(request):
                 email=form_data['email'],
                 title=form_data['title'],
                 idea=form_data['idea'],
+                status=form_data['status'],
             )
             _record_idea_submission(client_ip)
-            _send_idea_notification_email(idea_obj)
+            
+            if form_data['status'] == PUBLISHED:
+                _send_idea_notification_email(idea_obj)
+                messages.success(request, 'Thank you, your idea has been published.')
+            else:
+                messages.success(request, 'Your draft has been saved successfully. You can publish it anytime from your ideas page.')
+            
             _send_idea_confirmation_email(idea_obj)
-            messages.success(request, 'Thank you, your idea has been submitted.')
             return redirect('ideas_page')
 
     return render(

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container py-4">
+  <section class="layout">
+    <article class="hero-card">
+      <span class="badge">Preview</span>
+      <h1 style="margin-top: 12px;">Preview your idea</h1>
+      <p>Review how your idea will appear before submitting or publishing.</p>
+
+      <div style="border: 1px solid var(--line); border-radius: 12px; padding: 24px; margin: 24px 0; background: var(--panel-bg);">
+        {% if form_data.title %}
+          <h2 style="margin-top: 0;">{{ form_data.title }}</h2>
+        {% else %}
+          <h2 style="margin-top: 0; font-style: italic; color: var(--canvas-dimmed);">Untitled</h2>
+        {% endif %}
+
+        <div style="color: var(--canvas-dimmed); font-size: 0.9rem; margin-bottom: 16px;">
+          {% if form_data.name %}
+            <strong>From:</strong> {{ form_data.name }}
+            {% if form_data.email %}<br><strong>Email:</strong> {{ form_data.email }}{% endif %}
+          {% endif %}
+          {% if not is_new_submission %}
+            <br><strong>Status:</strong>
+            {% if form_data.status == 1 %}
+              <span class="badge bg-success">Published</span>
+            {% else %}
+              <span class="badge bg-secondary">Draft</span>
+            {% endif %}
+          {% endif %}
+        </div>
+
+        <div style="white-space: pre-wrap; word-wrap: break-word; line-height: 1.6;">
+          {{ form_data.idea }}
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <button type="button" class="btn btn-secondary" onclick="window.history.back();">
+          Back to Edit
+        </button>
+        {% if is_new_submission %}
+          <form method="post" action="{% url 'ideas_page' %}" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="name" value="{{ form_data.name }}">
+            <input type="hidden" name="email" value="{{ form_data.email }}">
+            <input type="hidden" name="title" value="{{ form_data.title }}">
+            <input type="hidden" name="idea" value="{{ form_data.idea }}">
+            <input type="hidden" name="status" value="{{ form_data.status }}">
+            <button type="submit" class="btn btn-primary">
+              {% if form_data.status == 1 %}
+                Publish Idea
+              {% else %}
+                Save as Draft
+              {% endif %}
+            </button>
+          </form>
+        {% else %}
+          <form method="post" action="{% url 'edit_idea_page' idea_obj.id %}" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="title" value="{{ form_data.title }}">
+            <input type="hidden" name="idea" value="{{ form_data.idea }}">
+            <input type="hidden" name="status" value="{{ form_data.status }}">
+            <button type="submit" class="btn btn-primary">
+              {% if form_data.status == 1 %}
+                Publish Idea
+              {% else %}
+                Save as Draft
+              {% endif %}
+            </button>
+          </form>
+        {% endif %}
+      </div>
+    </article>
+  </section>
+</main>
+{% endblock %}

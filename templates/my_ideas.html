@@ -53,10 +53,12 @@
                 <td>{{ idea.title|default:"Untitled" }}</td>
                 <td>{{ idea.created_on|date:"M d, Y H:i" }}</td>
                 <td>
-                  {% if idea.reviewed %}
-                    <span class="badge bg-success">Reviewed</span>
+                  {% if idea.status == 0 %}
+                    <span class="badge bg-secondary">Draft</span>
+                  {% elif idea.reviewed %}
+                    <span class="badge bg-success">Published & Reviewed</span>
                   {% else %}
-                    <span class="badge bg-secondary">Pending</span>
+                    <span class="badge bg-info">Published</span>
                   {% endif %}
                 </td>
                 <td>
