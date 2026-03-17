@@ -37,5 +37,31 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
+      id: pytest
+      continue-on-error: true
+      shell: bash
       run: |
-        pytest
+        mkdir -p test-results
+        set -o pipefail
+        pytest -ra --tb=short --junitxml=test-results/pytest.xml | tee test-results/pytest-output.txt
+    - name: Upload pytest artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: pytest-results-py${{ matrix.python-version }}
+        path: test-results/
+        if-no-files-found: ignore
+    - name: Summarize pytest failure
+      if: steps.pytest.outcome == 'failure'
+      shell: bash
+      run: |
+        {
+          echo "## Pytest failure summary"
+          echo
+          echo "The full pytest output and JUnit XML report are attached as workflow artifacts."
+          echo
+          echo '```text'
+          tail -n 200 test-results/pytest-output.txt
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"
+        exit 1
