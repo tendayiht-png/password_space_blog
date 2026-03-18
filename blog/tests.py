@@ -2,7 +2,7 @@ import json
 
 from django.contrib.auth.models import User
 from django.core import mail
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from .models import DRAFT, PUBLISHED, Idea, Post, UserContactProfile
@@ -187,6 +187,20 @@ class LoginApiTests(TestCase):
         self.assertEqual(response.json()['ok'], True)
 
 
+class AuthPageRoutingTests(TestCase):
+    def test_login_page_contains_forgot_password_link(self):
+        response = self.client.get(reverse('login_page'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse('forgot_password_page'))
+
+    def test_forgot_password_page_renders(self):
+        response = self.client.get(reverse('forgot_password_page'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Reset Your Password')
+
+
 class PasswordResetApiTests(TestCase):
     def test_password_reset_request_sends_email_for_matching_user(self):
         user = User.objects.create_user(
@@ -224,6 +238,30 @@ class PasswordResetApiTests(TestCase):
         self.assertTrue(response.json()['ok'])
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to, ['legacy.account@example.com'])
+
+    @override_settings(
+        DEBUG=True,
+        EMAIL_BACKEND='django.core.mail.backends.console.EmailBackend',
+    )
+    def test_password_reset_request_returns_debug_reset_link_in_console_mode(self):
+        user = User.objects.create_user(
+            username='console_debug_user',
+            email='console_debug_user@example.com',
+            password='VeryStr0ng!Password2026',
+        )
+
+        response = self.client.post(
+            '/API/password-reset-request',
+            data=json.dumps({'identifier': user.email}),
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['ok'])
+        self.assertEqual(data.get('debug_delivery_mode'), 'console')
+        self.assertIn('debug_message', data)
+        self.assertIn('/reset-password/', data.get('debug_reset_url', ''))
 
 
 class IdeaPageTests(TestCase):

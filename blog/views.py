@@ -855,18 +855,28 @@ def password_reset_request_api(request):
     Always returns success message regardless of whether user exists.
     """
     try:
+        console_backend = 'django.core.mail.backends.console.EmailBackend'
+        using_console_email = getattr(settings, 'EMAIL_BACKEND', '') == console_backend
+        debug_mode = bool(getattr(settings, 'DEBUG', False))
+
+        response_payload = {
+            'ok': True,
+            'message': 'If an account with that username or email exists, a password reset link has been sent.',
+        }
+
+        if debug_mode and using_console_email:
+            response_payload['debug_delivery_mode'] = 'console'
+            response_payload['debug_message'] = (
+                'Development mode is using the console email backend. '
+                'The reset email is printed in the server terminal output.'
+            )
+
         payload = _parse_request_payload(request)
         identifier = payload.get('identifier', '').strip()
 
         if not identifier:
             # Still return generic message
-            return JsonResponse(
-                {
-                    'ok': True,
-                    'message': 'If an account with that username or email exists, a password reset link has been sent.',
-                },
-                status=200,
-            )
+            return JsonResponse(response_payload, status=200)
 
         # Try to find user by username or email
         user = None
@@ -893,14 +903,12 @@ def password_reset_request_api(request):
 
             _send_password_reset_email(user.username, recipient_email, reset_url)
 
+            if debug_mode and using_console_email:
+                # Expose link only in local debug mode to unblock local testing.
+                response_payload['debug_reset_url'] = reset_url
+
         # ALWAYS return generic success message (anti-enumeration)
-        return JsonResponse(
-            {
-                'ok': True,
-                'message': 'If an account with that username or email exists, a password reset link has been sent.',
-            },
-            status=200,
-        )
+        return JsonResponse(response_payload, status=200)
 
     except Exception:
         # Even on error, return generic message
