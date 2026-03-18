@@ -187,6 +187,45 @@ class LoginApiTests(TestCase):
         self.assertEqual(response.json()['ok'], True)
 
 
+class PasswordResetApiTests(TestCase):
+    def test_password_reset_request_sends_email_for_matching_user(self):
+        user = User.objects.create_user(
+            username='reset_user',
+            email='reset_user@example.com',
+            password='VeryStr0ng!Password2026',
+        )
+
+        response = self.client.post(
+            '/API/password-reset-request',
+            data=json.dumps({'identifier': user.username}),
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()['ok'])
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, ['reset_user@example.com'])
+        self.assertIn('/reset-password/', mail.outbox[0].body)
+
+    def test_password_reset_request_supports_username_email_legacy_accounts(self):
+        user = User.objects.create_user(
+            username='legacy.account@example.com',
+            email='',
+            password='VeryStr0ng!Password2026',
+        )
+
+        response = self.client.post(
+            '/API/password-reset-request',
+            data=json.dumps({'identifier': user.username}),
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()['ok'])
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, ['legacy.account@example.com'])
+
+
 class IdeaPageTests(TestCase):
     def test_idea_form_prefills_from_authenticated_account(self):
         user = User.objects.create_user(

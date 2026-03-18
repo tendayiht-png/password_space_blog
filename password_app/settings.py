@@ -189,17 +189,25 @@ STORAGES = {
     },
 }
 
-# Email configuration — uses SMTP in production, console backend locally.
-EMAIL_BACKEND = os.environ.get(
-    'EMAIL_BACKEND',
-    'django.core.mail.backends.console.EmailBackend',
-)
+# Email configuration — prefers SMTP automatically when credentials are available.
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() in {'1', 'true', 'yes'}
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@passwordspaceblog.com')
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', '').strip()
+if not EMAIL_BACKEND:
+    EMAIL_BACKEND = (
+        'django.core.mail.backends.smtp.EmailBackend'
+        if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD
+        else 'django.core.mail.backends.console.EmailBackend'
+    )
+
+DEFAULT_FROM_EMAIL = (
+    os.environ.get('DEFAULT_FROM_EMAIL', '').strip()
+    or EMAIL_HOST_USER
+    or 'noreply@passwordspaceblog.com'
+)
 ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', '')
 
 # Idea submission controls.

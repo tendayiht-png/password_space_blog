@@ -138,6 +138,23 @@ python manage.py check
 - Argon2 is the primary password hash algorithm.
 - Local development can use console email backend by default.
 
+### Password Reset Email Troubleshooting
+
+If `/forgot-password/` appears to work but no email arrives, check the active email backend:
+
+- `django.core.mail.backends.console.EmailBackend` means reset emails are printed to the terminal only.
+- To send real emails, configure SMTP credentials and optionally set `EMAIL_BACKEND` explicitly.
+
+Recommended environment variables for real delivery:
+
+- `EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend`
+- `EMAIL_HOST=smtp.gmail.com` (or your provider)
+- `EMAIL_PORT=587`
+- `EMAIL_USE_TLS=True`
+- `EMAIL_HOST_USER=<your-smtp-username>`
+- `EMAIL_HOST_PASSWORD=<your-smtp-password-or-app-password>`
+- `DEFAULT_FROM_EMAIL=<verified-sender@your-domain>`
+
 ## Deployment Notes
 
 The project is set up for Heroku-style process execution:

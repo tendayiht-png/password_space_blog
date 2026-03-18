@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import datetime, timedelta
 
 from django.conf import settings
@@ -26,6 +27,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .forms import PostEditorForm
 from .models import Idea, PUBLISHED, Post, UserContactProfile, DRAFT
+
+
+logger = logging.getLogger(__name__)
 
 
 class PostList(ListView):
@@ -809,6 +813,23 @@ The Password Space Blog Team
         pass
 
 
+def _password_reset_recipient_for_user(user):
+    """Resolve the best email destination for a password reset message."""
+    if not user:
+        return ''
+
+    direct_email = (user.email or '').strip()
+    if direct_email:
+        return direct_email
+
+    # Backward compatibility for legacy accounts that stored email in username.
+    username = (user.username or '').strip()
+    if '@' in username:
+        return username
+
+    return ''
+
+
 class ForgotPasswordView(TemplateView):
     """Password reset request page."""
     template_name = 'forgot_password.html'
@@ -858,15 +879,19 @@ def password_reset_request_api(request):
         except Exception:
             pass
 
-        # If user exists and has email, send reset link
-        if user and user.email:
+        # If user exists and has an identifiable email destination, send reset link.
+        recipient_email = _password_reset_recipient_for_user(user)
+        if user and recipient_email:
             token = default_token_generator.make_token(user)
             uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-            
-            # Build reset URL
-            reset_url = f"{request.scheme}://{request.get_host()}/reset-password/{uidb64}/{token}/"
-            
-            _send_password_reset_email(user.username, user.email, reset_url)
+
+            reset_path = reverse(
+                'reset_password_page',
+                kwargs={'uidb64': uidb64, 'token': token},
+            )
+            reset_url = request.build_absolute_uri(reset_path)
+
+            _send_password_reset_email(user.username, recipient_email, reset_url)
 
         # ALWAYS return generic success message (anti-enumeration)
         return JsonResponse(
@@ -982,16 +1007,26 @@ Best regards,
 The Password Space Blog Team
         """
 
-        send_mail(
+        from_email = (
+            getattr(settings, 'DEFAULT_FROM_EMAIL', '').strip()
+            or getattr(settings, 'EMAIL_HOST_USER', '').strip()
+            or 'noreply@passwordspaceblog.com'
+        )
+
+        sent_count = send_mail(
             subject=subject,
             message=message.strip(),
-            from_email='noreply@passwordspaceblog.com',
+            from_email=from_email,
             recipient_list=[email],
-            fail_silently=True,
+            fail_silently=False,
         )
+
+        if sent_count < 1:
+            logger.warning('Password reset email was not queued for %s', email)
+        return bool(sent_count)
     except Exception:
-        # Log error but don't fail the request
-        pass
+        logger.exception('Failed to send password reset email to %s', email)
+        return False
 
 
 # ============================================================================
