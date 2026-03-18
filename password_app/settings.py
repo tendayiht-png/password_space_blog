@@ -15,6 +15,14 @@ import sys
 from pathlib import Path
 import dj_database_url
 
+try:
+    from env import load_env
+except ImportError:
+    load_env = None
+
+if load_env:
+    load_env()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
