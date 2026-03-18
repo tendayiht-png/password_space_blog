@@ -19,7 +19,7 @@ ENV_OVERRIDES = {
 	'EMAIL_USE_TLS': 'True',
 	'EMAIL_HOST_USER': 'admin',
 	'EMAIL_HOST_PASSWORD': 'TempPassword123!',
-	'DEFAULT_FROM_EMAIL': 'info@passwordsafeblog.co.uk',
+	'DEFAULT_FROM_EMAIL': 'tendayiht@gmail.com',
 }
 
 
