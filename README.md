@@ -168,3 +168,4 @@ Defined in [Procfile](Procfile).
 
 - Mermaid ER source: [ERDiagram.md](ERDiagram.md)
 - Graphviz ER source: [ERDiagram.dot](ERDiagram.dot)
+- Hand-sketched Wireframes in blog media folder.
