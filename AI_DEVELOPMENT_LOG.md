@@ -1,6 +1,6 @@
 # AI-Augmented Development Log
 
-This document provides a comprehensive record of how AI tools (specifically GitHub Copilot and Claude) were used to enhance the development, debugging, and optimization of Password Space Blog. As this project emphasizes AI-augmented development, this log serves as evidence of AI's impact on code quality, workflow efficiency, and problem-solving.
+This document provides a comprehensive record of how AI tools (specifically GitHub Copilot and Claude) were used to enhance the development, debugging, and optimization of Password Space Blog. As this project emphasises AI-augmented development, this log serves as evidence of AI's impact on code quality, workflow efficiency, and problem-solving.
 
 ---
 
@@ -19,11 +19,6 @@ This document provides a comprehensive record of how AI tools (specifically GitH
 **Location:** `blog/views.py` - Login API endpoint  
 **AI Tool Used:** GitHub Copilot  
 **Challenge:** Implementing secure login validation requiring username, email, AND telephone verification without standard Django patterns.
-
-**AI Contribution:**
-- Generated the three-factor validation logic that normalizes telephone formats (handling spaces, dashes, country codes)
-- Suggested the response structure combining security checks with user-friendly error messaging
-- Recommended validation order: check username existence → email match → telephone match → password verification
 
 **Code Pattern Generated:**
 ```python
@@ -48,18 +43,6 @@ response = {
 **AI Tool Used:** Claude (LLM Assistant)  
 **Challenge:** Creating secure, time-limited tokens for password recovery while maintaining backward compatibility with legacy email-as-username accounts.
 
-**AI Contribution:**
-- Suggested Django's built-in `django.contrib.auth.tokens.PasswordResetTokenGenerator` over custom implementations
-- Provided the pattern for extracting encoded user ID from reset links: `urlsafe_base64_decode()`
-- Recommended handling the legacy account case where `email` field is blank by falling back to `username`
-- Suggested debug mode implementation for development without email infrastructure
-
-**Code Pattern Generated:**
-```python
-# AI-suggested fallback for legacy accounts
-email_to_send = user.email if user.email else user.username
-```
-
 **Impact:** Avoided security vulnerabilities that come with custom token implementations. Enabled seamless legacy account support, preventing data loss for existing users who registered with email-as-username pattern.
 
 ---
@@ -70,18 +53,6 @@ email_to_send = user.email if user.email else user.username
 **AI Tool Used:** GitHub Copilot  
 **Challenge:** Automatically claim anonymous ideas when a user logs in with a matching email, updating database relationships without breaking referential integrity.
 
-**AI Contribution:**
-- Suggested the query pattern: `Idea.objects.filter(owner=None, email=user.email).update(owner=user)`
-- Recommended executing this logic in the Share Ideas view when user is authenticated
-- Suggested the elegant `.update()` approach instead of iterating and saving individually
-- Provided the pattern for verifying the operation succeeded
-
-**Code Pattern Generated:**
-```python
-# AI-suggested efficient bulk update
-Idea.objects.filter(owner=None, email=user.email).update(owner=user)
-```
-
 **Impact:** Reduced the implementation from an estimated 8-10 lines of loop logic to 1 efficient database query. This provides better performance (single query vs. n+1 problem) and cleaner code.
 
 ---
@@ -91,14 +62,6 @@ Idea.objects.filter(owner=None, email=user.email).update(owner=user)
 **Location:** `blog/views.py` - Registration API  
 **AI Tool Used:** GitHub Copilot + Claude  
 **Challenge:** Building a registration endpoint that validates availability, checks duplicates, hashes passwords with Argon2, and returns structured response with email confirmation.
-
-**AI Contribution:**
-- Generated the JSON request parsing pattern with `json.loads(request.body)`
-- Suggested the availability check endpoint pattern (GET with query params)
-- Provided validation order recommendations (username → email → password strength)
-- Recommended response structure: `{'ok': true, 'outcome': {...}, 'message': '...'}`
-- Suggested using Django's `User.objects.create_user()` for automatic password hashing
-- Provided the UserContactProfile creation pattern
 
 **Code Patterns Generated:**
 ```python
@@ -128,12 +91,6 @@ return {
 **AI Tool Used:** GitHub Copilot  
 **Challenge:** Auto-populate form fields from authenticated user's profile while handling edge cases (blank email field, missing last name).
 
-**AI Contribution:**
-- Suggested the context data structure: `{'form_data': {...}, 'prefilled_from_account': True}`
-- Recommended fallback logic: if `email` is blank, use `username`
-- Provided the name combination pattern: `f"{first_name} {last_name}".strip()`
-- Suggested UI messaging to indicate prefilled fields
-
 **Code Pattern Generated:**
 ```python
 # AI-suggested fallback pattern
@@ -152,12 +109,6 @@ name = f"{user.first_name} {user.last_name}".strip()
 **Problem:** Login validation was failing for valid UK phone numbers entered in different formats (e.g., "07700 900500" vs "07700900500").
 
 **Detection Method:** Manual testing revealed users with correctly stored phone numbers couldn't log in if they entered spaces.
-
-**AI Contribution (Claude):**
-- Diagnosed the root cause: string comparison without normalization
-- Suggested the solution: normalize both stored and input phone numbers before comparison
-- Recommended the specific approach: `''.join(c for c in phone if c.isdigit())`
-- Validated the pattern against international phone formats
 
 **Resolution:**
 ```python
@@ -184,12 +135,6 @@ if normalize_phone(user_profile.telephone) == normalize_phone(input_telephone):
 
 **Detection Method:** Email delivery test revealed `AttributeError` when accessing `user.email` for certain accounts.
 
-**AI Contribution (Claude):**
-- Identified the pattern: legacy accounts had `email=''` but `username='user@example.com'`
-- Suggested the fallback: check if email is blank before using it
-- Recommended updating the test to cover this edge case
-- Provided the explicit test: `test_password_reset_request_supports_username_email_legacy_accounts`
-
 **Resolution:**
 ```python
 # Before (broken):
@@ -210,12 +155,6 @@ email_recipient = user.email if user.email else user.username
 **Problem:** Ideas list page was increasingly slow as the number of user ideas grew (N+1 query problem suspected).
 
 **Detection Method:** Django debug toolbar revealed multiple similar queries being executed in a loop.
-
-**AI Contribution (GitHub Copilot):**
-- Identified the N+1 problem: querying for each idea's owner sequentially
-- Suggested using `.prefetch_related('owner')` or `.select_related('owner')` to batch queries
-- Recommended the specific approach: `Idea.objects.select_related('owner').filter(...)`
-- Provided the comparison showing single query vs. n+1 queries
 
 **Resolution:**
 ```python
@@ -240,12 +179,6 @@ for idea in ideas:
 
 **Challenge:** Reducing frontend complexity when handling varied authentication responses.
 
-**AI Contribution (Claude):**
-- Analyzed registration, login, and password reset endpoints
-- Identified inconsistency: different response structures for success/failure
-- Recommended standardized structure: `{'ok': boolean, 'message': string, 'errors': {field: 'error'}}`
-- Suggested including `outcome` object for rich status information
-
 **Optimization Impact:**
 ```python
 # Standardized response structure
@@ -268,12 +201,6 @@ for idea in ideas:
 
 **Challenge:** Homepage was showing untruncated ideas, making the page long and hard to scan.
 
-**AI Contribution (GitHub Copilot):**
-- Suggested template-level truncation approach instead of model-level
-- Recommended using Django's `truncatewords_html` filter
-- Proposed a "Read Full Idea" call-to-action pattern
-- Suggested adding CSS classes to style preview vs. full view differently
-
 **Optimization Impact:**
 - Reduced initial homepage load time by preventing full idea text rendering
 - Improved scannability: users can quickly preview ideas before deep dive
@@ -287,12 +214,6 @@ for idea in ideas:
 ### 3. Form Prefilling Improves Submission Flow
 
 **Challenge:** Idea submission form required users to re-enter name and email they already provided during registration.
-
-**AI Contribution (GitHub Copilot):**
-- Suggested extracting user profile data in view context
-- Recommended UI indicator: "Name and email were prefilled from your account details"
-- Provided the pattern for fallback to username when email is blank
-- Suggested test to verify both full email and legacy account cases
 
 **Optimization Impact:**
 ```python
@@ -317,11 +238,6 @@ context = {
 ### 4. Database Query Optimization for Ideas Privacy
 
 **Challenge:** "My Ideas" page was checking ownership for each idea individually during template rendering.
-
-**AI Contribution (Claude):**
-- Recommended moving privacy logic to queryset filtering
-- Suggested using `select_related()` for user data to prevent N+1
-- Proposed efficient filtering pattern
 
 **Optimization Impact:**
 ```python
