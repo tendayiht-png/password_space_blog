@@ -279,8 +279,8 @@ user_ideas = Idea.objects.filter(owner=user).select_related('owner')
 
 2. **AI for Bug Diagnosis**
    - Phone format normalization bug: AI immediately identified root cause
-   - Legacy account email handling: AI recognized the pattern quickly
-   - Query optimization: AI correctly diagnosed N+1 problem
+   - Legacy account email handling: AI recognised the pattern quickly
+   - Query optimisation: AI correctly diagnosed N+1 problem
    - **Key insight:** Describing the symptom clearly led to precise diagnosis
 
 3. **AI for Best Practices Suggestion**
