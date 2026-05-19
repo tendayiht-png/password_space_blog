@@ -1,4 +1,5 @@
 # Password Reset Implementation
+As shown below, seventeen tests were performed to verify password resetting.
 
 ## Status: ✅ COMPLETE (17/17 tests passing)
 
